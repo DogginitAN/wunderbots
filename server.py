@@ -302,9 +302,13 @@ async def api_stt(request):
         log.info(f"STT: received {len(audio_bytes)} bytes of audio")
         t0 = time.time()
         
+        # Detect format from the uploaded filename
+        filename = getattr(audio_file, 'filename', 'question.mp4') or 'question.mp4'
+        log.info(f"STT: filename={filename}, {len(audio_bytes)} bytes")
+        
         # Send to Groq Whisper
         transcription = client.audio.transcriptions.create(
-            file=("question.webm", audio_bytes),
+            file=(filename, audio_bytes),
             model="whisper-large-v3-turbo",
             language="en",
             temperature=0.0,
