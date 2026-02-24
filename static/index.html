@@ -214,7 +214,7 @@ function prefetchAudio(fromAct, fromScene, count) {
 }
 
 function playSceneAudio(actIdx, sceneIdx) {
-  if (!ttsEnabled) return;
+  if (!ttsEnabled) return false;
   if (currentAudio) { currentAudio.pause(); currentAudio = null; }
   const key = sceneKey(actIdx, sceneIdx);
   const url = audioCache.get(key);
@@ -224,11 +224,14 @@ function playSceneAudio(actIdx, sceneIdx) {
     currentAudio.onended = () => {
       currentAudio = null;
       if (!state.waitingQuiz && !state.finished) {
-        autoTimer = setTimeout(advance, 800);
+        autoTimer = setTimeout(advance, 600);
       }
     };
+    prefetchAudio(actIdx, sceneIdx + 1, 3);
+    return true;  // audio is playing — don't set text timer
   }
   prefetchAudio(actIdx, sceneIdx + 1, 3);
+  return false;  // no audio — caller should use text timer
 }
 
 function stopAudio() {
@@ -415,10 +418,13 @@ function advance() {
 
   // Play audio for dialogue/explanation scenes
   if ((next.type === "dialogue" || next.type === "explanation") && ttsEnabled) {
-    playSceneAudio(state.actIdx, state.sceneIdx);
-    // Audio onended will handle auto-advance; set fallback timer
-    const len = (next.text||'').length;
-    autoTimer = setTimeout(advance, Math.max(5000, len * 100));
+    const audioPlaying = playSceneAudio(state.actIdx, state.sceneIdx);
+    if (!audioPlaying) {
+      // No cached audio yet — use text timer as fallback
+      const len = (next.text||'').length;
+      autoTimer = setTimeout(advance, Math.max(3000, len * 70));
+    }
+    // If audio IS playing, onended callback handles advance — no timer needed
   } else if (next.type === "transition") {
     autoTimer = setTimeout(advance, 3000);
   } else if (next.type !== "quiz" && next.type !== "celebration") {
