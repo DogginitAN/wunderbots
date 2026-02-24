@@ -512,6 +512,23 @@ async function submitQuestion() {
   }
 }
 
+// iOS requires a user gesture to unlock audio playback.
+// We create & play a silent audio on the first interaction.
+let audioUnlocked = false;
+function unlockAudio() {
+  if (audioUnlocked) return;
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  const buf = ctx.createBuffer(1, 1, 22050);
+  const src = ctx.createBufferSource();
+  src.buffer = buf;
+  src.connect(ctx.destination);
+  src.start(0);
+  audioUnlocked = true;
+  ctx.close();
+}
+document.addEventListener('click', unlockAudio, { once: true });
+document.addEventListener('touchstart', unlockAudio, { once: true });
+
 function toggleSound() {
   ttsEnabled = !ttsEnabled;
   if (!ttsEnabled) stopAudio();
