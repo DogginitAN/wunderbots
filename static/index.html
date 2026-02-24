@@ -214,25 +214,31 @@ function prefetchAudio(fromAct, fromScene, count) {
   }
 }
 
-function playSceneAudio(actIdx, sceneIdx) {
+function playSceneAudio(actIdx, sceneIdx, _retries) {
   if (!ttsEnabled) return false;
-  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
   const key = sceneKey(actIdx, sceneIdx);
   const url = audioCache.get(key);
   if (url) {
+    if (currentAudio) { currentAudio.pause(); currentAudio = null; }
     currentAudio = new Audio(url);
     currentAudio.play().catch(e => console.warn('Audio play blocked:', e));
     currentAudio.onended = () => {
       currentAudio = null;
       if (!state.waitingQuiz && !state.finished) {
+        clearTimeout(autoTimer);
         autoTimer = setTimeout(advance, 600);
       }
     };
     prefetchAudio(actIdx, sceneIdx + 1, 3);
-    return true;  // audio is playing — don't set text timer
+    return true;
+  }
+  // Audio not ready yet — retry up to 6 times (3 seconds)
+  const retries = _retries || 0;
+  if (retries < 6) {
+    setTimeout(() => playSceneAudio(actIdx, sceneIdx, retries + 1), 500);
   }
   prefetchAudio(actIdx, sceneIdx + 1, 3);
-  return false;  // no audio — caller should use text timer
+  return false;
 }
 
 function stopAudio() {
