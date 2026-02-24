@@ -578,12 +578,16 @@ async function startRecording() {
       return;
     }
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    // Safari doesn't support audio/webm — use mp4 on Safari, webm elsewhere
-    let mimeType = 'audio/webm';
-    if (!MediaRecorder.isTypeSupported('audio/webm')) {
-      mimeType = 'audio/mp4';  // Safari/iOS fallback
+    // Find a supported mimeType — Safari needs special handling
+    let mimeType = '';
+    for (const mt of ['audio/webm', 'audio/mp4', 'audio/aac', 'audio/ogg', 'audio/wav', '']) {
+      if (mt === '' || MediaRecorder.isTypeSupported(mt)) { mimeType = mt; break; }
     }
-    mediaRecorder = new MediaRecorder(stream, { mimeType });
+    console.log('MediaRecorder mimeType:', mimeType || '(default)');
+    // Create recorder — omit mimeType option if none supported (let browser pick)
+    mediaRecorder = mimeType 
+      ? new MediaRecorder(stream, { mimeType }) 
+      : new MediaRecorder(stream);
     audioChunks = [];
     
     mediaRecorder.ondataavailable = (e) => {
@@ -594,7 +598,8 @@ async function startRecording() {
       // Stop all tracks to release the mic
       stream.getTracks().forEach(t => t.stop());
       
-      const audioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType });
+      const blobType = mediaRecorder.mimeType || 'audio/mp4';
+      const audioBlob = new Blob(audioChunks, { type: blobType });
       if (audioBlob.size < 1000) return; // too short, ignore
       
       // Show transcribing state
@@ -667,7 +672,7 @@ function toggleRecording() {
 
 async function transcribeAudio(audioBlob) {
   const formData = new FormData();
-  const ext = (audioBlob.type || '').includes('mp4') ? 'mp4' : 'webm';
+  const ext = (audioBlob.type || '').includes('webm') ? 'webm' : (audioBlob.type || '').includes('ogg') ? 'ogg' : 'mp4';
   formData.append('audio', audioBlob, 'question.' + ext);
   
   const res = await fetch('/api/stt', {
