@@ -539,10 +539,26 @@ async function submitQuestion() {
     
     // Play first scene audio & start auto-advance
     if ((first?.type === 'dialogue' || first?.type === 'explanation') && ttsEnabled) {
-      // Small delay to let first TTS fetch complete
-      setTimeout(() => playSceneAudio(0, 0), 1500);
-      const len = (first?.text||'').length;
-      autoTimer = setTimeout(advance, Math.max(5000, len * 100));
+      // Poll for first audio to be ready (TTS takes 2-4s)
+      const firstKey = sceneKey(0, 0);
+      let tries = 0;
+      const waitForFirstAudio = () => {
+        tries++;
+        if (audioCache.has(firstKey)) {
+          const playing = playSceneAudio(0, 0);
+          if (!playing) {
+            const len = (first?.text||'').length;
+            autoTimer = setTimeout(advance, Math.max(3000, len * 70));
+          }
+        } else if (tries > 16) {
+          // Give up after 8s — use text timer
+          const len = (first?.text||'').length;
+          autoTimer = setTimeout(advance, Math.max(3000, len * 70));
+        } else {
+          setTimeout(waitForFirstAudio, 500);
+        }
+      };
+      setTimeout(waitForFirstAudio, 1000);
     } else {
       const len = (first?.text||'').length;
       autoTimer = setTimeout(advance, Math.max(3000, len * 70));
