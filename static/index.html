@@ -203,7 +203,7 @@ function prefetchAudio(fromAct, fromScene, count) {
       const scene = act.scenes[sI];
       const key = sceneKey(aI, sI);
       if (!audioCache.has(key) && scene.text && (scene.type === 'dialogue' || scene.type === 'explanation')) {
-        const voice = voiceMap[scene.character] || 'troy';
+        const voice = voiceMap[scene.character] || 'pNInz6obpgDQGcFmaJgB';
         const emotion = scene.emotion || 'neutral';
         fetchTTS(scene.text, voice, emotion, slug, key).then(url => { if (url) audioCache.set(key, url); });
         fetched++;

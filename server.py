@@ -172,7 +172,7 @@ async def api_tts(request):
         "text": "What the character says",
         "character": "nova",
         "emotion": "excited",
-        "voice": "tara"  (from voice_map)
+        "voice": "EXAVITQu4vr4xnSDxMaL"  (ElevenLabs voice ID from voice_map)
     }
     
     Returns: audio/wav
