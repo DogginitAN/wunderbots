@@ -440,6 +440,9 @@ function advance() {
   render();
   scrollBottom();
 
+  // Always prefetch ahead regardless of scene type
+  if (ttsEnabled) prefetchAudio(state.actIdx, state.sceneIdx, 5);
+
   // Play audio for dialogue/explanation scenes
   if ((next.type === "dialogue" || next.type === "explanation")) {
     if (ttsEnabled) playSceneAudio(state.actIdx, state.sceneIdx);
