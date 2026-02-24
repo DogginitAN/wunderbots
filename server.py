@@ -215,7 +215,7 @@ async def api_tts(request):
         
         return Response(
             content=audio_bytes,
-            media_type="audio/wav",
+            media_type="audio/mpeg",
             headers={
                 "Cache-Control": "public, max-age=3600",
             },
@@ -251,7 +251,7 @@ async def api_library_audio(request):
         if not audio_b64:
             return JSONResponse({"error": "Audio not cached"}, status_code=404)
         audio_bytes = base64.b64decode(audio_b64)
-        return Response(content=audio_bytes, media_type="audio/wav")
+        return Response(content=audio_bytes, media_type="audio/mpeg")
     except Exception as e:
         return JSONResponse({"error": str(e)}, status_code=500)
 

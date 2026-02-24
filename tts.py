@@ -1,132 +1,124 @@
-"""Wunderbots TTS — Groq Orpheus voice generation"""
+"""Wunderbots TTS — ElevenLabs voices.
+
+Uses ElevenLabs Flash v2.5 for fast, expressive character voices.
+Falls back gracefully if API key is missing or quota is exhausted.
+
+Voice casting:
+  Nova  — confident young woman, the leader
+  Bolt  — energetic kid, comic relief
+  Pip   — soft, gentle, quiet genius
+  Experts — rotated from a pool of distinct voices
+"""
 import os
-import io
-import re
 import logging
-from openai import OpenAI
+import requests
 
 log = logging.getLogger("wunderbots.tts")
 
-client = OpenAI(
-    base_url="https://api.groq.com/openai/v1",
-    api_key=os.environ.get("GROK_API_KEY"),
-)
+ELEVENLABS_API_KEY = os.environ.get("ELEVENLABS_API_KEY", "")
+ELEVENLABS_BASE = "https://api.elevenlabs.io/v1"
+MODEL_ID = "eleven_flash_v2_5"  # Fast, cheap (0.5 credits/char on Starter+)
 
-TTS_MODEL = "canopylabs/orpheus-v1-english"
-MAX_CHARS = 200  # Groq Orpheus per-request limit
+# ─── Voice IDs ───────────────────────────────────────────────────────────────
+# These are ElevenLabs default library voices. You can swap them for custom
+# voices or clones by updating the IDs.
+#
+# Browse voices: https://elevenlabs.io/voice-library
+# Or list via API: GET /v1/voices
 
-# ─── VOICE MAPPING ───────────────────────────────────────────────────────────
-# Groq Orpheus voices: troy, hannah, austin, tara, leah, jess
-# Open-source Orpheus voices: tara, leah, jess, leo, dan, mia, zac, zoe
-# Groq subset is troy, hannah, austin + possibly tara, leah, jess
-
-# Guide characters — consistent across all episodes
 GUIDE_VOICES = {
-    "nova": "tara",      # confident, clear, leader energy
-    "bolt": "austin",    # energetic, good for silly delivery
-    "pip":  "leah",      # warm, gentle, perfect for shy genius
+    # Nova — confident, warm, leader energy
+    "nova": "EXAVITQu4vr4xnSDxMaL",    # "Bella" — young female, warm & clear
+    # Bolt — energetic, playful, kid-like
+    "bolt": "TxGEqnHWrfWFTfGW9XjX",     # "Josh" — young male, upbeat & energetic
+    # Pip — soft, gentle, thoughtful
+    "pip": "MF3mGyEYCl7XYWbV9V6O",       # "Elli" — soft female, gentle & kind
 }
 
-# Expert voice pool — rotated based on expert index
-EXPERT_VOICES = ["troy", "hannah", "jess"]
+# Pool of voices for rotating experts (each episode gets different experts)
+EXPERT_VOICE_POOL = [
+    "pNInz6obpgDQGcFmaJgB",   # "Adam" — deep male, authoritative
+    "21m00Tcm4TlvDq8ikWAM",   # "Rachel" — professional female
+    "yoZ06aMxZJJ28mfd3POQ",   # "Sam" — friendly male
+    "jBpfuIE2acCO8z3wKNLl",   # "Gigi" — animated female
+    "VR6AewLTigWG4xSOukaG",   # "Arnold" — strong male
+    "ThT5KcBeYPX3keUQqHPh",   # "Dorothy" — warm older female
+]
 
-# ─── EMOTION → VOCAL DIRECTION ──────────────────────────────────────────────
-EMOTION_DIRECTIONS = {
-    "neutral":    "",
-    "excited":    "[excited] ",
-    "thinking":   "[thoughtful] ",
-    "surprised":  "[surprised] ",
-    "happy":      "[cheerful] ",
-    "explaining": "[warm] ",
-    "silly":      "[playful] ",
-    "shy":        "[soft] ",
+# ─── Emotion → voice settings mapping ────────────────────────────────────────
+# ElevenLabs doesn't use explicit vocal directions like Groq Orpheus.
+# Instead, it reads emotion from text cues and we tune stability/similarity.
+# Lower stability = more expressive/emotional, higher = more consistent.
+
+EMOTION_SETTINGS = {
+    "excited":    {"stability": 0.3, "similarity_boost": 0.8},
+    "happy":      {"stability": 0.4, "similarity_boost": 0.75},
+    "silly":      {"stability": 0.25, "similarity_boost": 0.7},
+    "surprised":  {"stability": 0.3, "similarity_boost": 0.75},
+    "explaining": {"stability": 0.55, "similarity_boost": 0.8},
+    "thinking":   {"stability": 0.5, "similarity_boost": 0.8},
+    "shy":        {"stability": 0.6, "similarity_boost": 0.85},
+    "neutral":    {"stability": 0.5, "similarity_boost": 0.75},
 }
 
-
-def get_voice_for_character(character_id: str, characters: dict, expert_index: int = 0) -> str:
-    """Determine which Orpheus voice to use for a character."""
-    if character_id in GUIDE_VOICES:
-        return GUIDE_VOICES[character_id]
-    
-    # For experts, rotate through the pool
-    return EXPERT_VOICES[expert_index % len(EXPERT_VOICES)]
+# For backward compat with the old Groq module
+EMOTION_DIRECTIONS = {k: "" for k in EMOTION_SETTINGS}
 
 
 def build_expert_voice_map(characters: dict) -> dict:
-    """Build a character_id → voice mapping for the whole episode."""
-    voice_map = dict(GUIDE_VOICES)
+    """Build a character_id → voice_id map for an episode's characters."""
+    voice_map = {}
     expert_idx = 0
-    for char_id, char_data in characters.items():
-        if char_id not in voice_map:
-            voice_map[char_id] = EXPERT_VOICES[expert_idx % len(EXPERT_VOICES)]
+
+    for char_id, char in characters.items():
+        if char_id in GUIDE_VOICES:
+            voice_map[char_id] = GUIDE_VOICES[char_id]
+        else:
+            # Rotate through expert voice pool
+            voice_map[char_id] = EXPERT_VOICE_POOL[expert_idx % len(EXPERT_VOICE_POOL)]
             expert_idx += 1
+
     return voice_map
 
 
-def split_text(text: str, max_len: int = MAX_CHARS) -> list[str]:
-    """Split text into chunks under max_len at sentence boundaries."""
-    if len(text) <= max_len:
-        return [text]
-    
-    chunks = []
-    remaining = text
-    while remaining:
-        if len(remaining) <= max_len:
-            chunks.append(remaining)
-            break
-        
-        # Find best split point (sentence boundary) before max_len
-        split_at = max_len
-        for sep in ['. ', '! ', '? ', '— ', ', ']:
-            idx = remaining[:max_len].rfind(sep)
-            if idx > 0:
-                split_at = idx + len(sep)
-                break
-        
-        chunks.append(remaining[:split_at].strip())
-        remaining = remaining[split_at:].strip()
-    
-    return chunks
+def generate_speech(text: str, voice_id: str, emotion: str = "neutral") -> bytes:
+    """Generate speech audio via ElevenLabs API.
 
+    Args:
+        text: The dialogue text to speak
+        voice_id: ElevenLabs voice ID
+        emotion: Emotion key for voice settings tuning
 
-def generate_speech(text: str, voice: str, emotion: str = "neutral") -> bytes:
-    """Generate speech audio for a single text chunk.
-    Returns WAV bytes.
+    Returns:
+        MP3 audio bytes
     """
-    direction = EMOTION_DIRECTIONS.get(emotion, "")
-    input_text = f"{direction}{text}" if direction else text
-    
-    # Split if over limit
-    chunks = split_text(input_text)
-    
-    all_audio = bytearray()
-    for chunk in chunks:
-        try:
-            response = client.audio.speech.create(
-                model=TTS_MODEL,
-                voice=voice,
-                input=chunk,
-                response_format="wav",
-            )
-            all_audio.extend(response.content)
-        except Exception as e:
-            log.error(f"TTS error for chunk '{chunk[:50]}...': {e}")
-            raise
-    
-    return bytes(all_audio)
+    if not ELEVENLABS_API_KEY:
+        raise RuntimeError("ELEVENLABS_API_KEY not set")
 
+    if not text.strip():
+        raise ValueError("Empty text")
 
-def generate_scene_audio(scene: dict, voice_map: dict) -> bytes | None:
-    """Generate audio for a single scene. Returns WAV bytes or None if scene has no dialogue."""
-    if scene.get("type") not in ("dialogue", "explanation"):
-        return None
-    
-    text = scene.get("text", "")
-    if not text:
-        return None
-    
-    character_id = scene.get("character", "")
-    voice = voice_map.get(character_id, "troy")
-    emotion = scene.get("emotion", "neutral")
-    
-    return generate_speech(text, voice, emotion)
+    settings = EMOTION_SETTINGS.get(emotion, EMOTION_SETTINGS["neutral"])
+
+    url = f"{ELEVENLABS_BASE}/text-to-speech/{voice_id}"
+    headers = {
+        "xi-api-key": ELEVENLABS_API_KEY,
+        "Content-Type": "application/json",
+    }
+    payload = {
+        "text": text,
+        "model_id": MODEL_ID,
+        "voice_settings": {
+            "stability": settings["stability"],
+            "similarity_boost": settings["similarity_boost"],
+        },
+    }
+
+    response = requests.post(url, json=payload, headers=headers, timeout=30)
+
+    if response.status_code != 200:
+        error_detail = response.text[:200]
+        log.error(f"ElevenLabs API error {response.status_code}: {error_detail}")
+        raise RuntimeError(f"ElevenLabs TTS failed: {response.status_code}")
+
+    return response.content
