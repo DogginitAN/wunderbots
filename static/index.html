@@ -18,6 +18,7 @@ body { font-family:'Fredoka',sans-serif; overflow:hidden; height:100vh; height:1
 @keyframes twinkle { 0%,100%{opacity:0.3} 50%{opacity:1} }
 @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
 @keyframes speakPulse { 0%,100%{box-shadow:0 0 12px rgba(255,255,255,0.3)} 50%{box-shadow:0 0 24px rgba(255,255,255,0.6)} }
+@keyframes micPulse { 0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0.4)} 50%{box-shadow:0 0 0 12px rgba(239,68,68,0)} }
 
 /* Home Screen */
 .home { display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;height:100dvh;padding:32px;background:linear-gradient(135deg,#1E1B4B 0%,#312E81 30%,#4C1D95 60%,#7C3AED 100%);position:relative;overflow:hidden; }
@@ -248,8 +249,12 @@ function renderHome() {
       <h1>Wunderbots</h1>
       <p class="sub">What do you want to know?</p>
       <div class="question-input">
-        <input id="qinput" type="text" placeholder="Ask any question..." autofocus
-          onkeydown="if(event.key==='Enter')submitQuestion()">
+        <div style="display:flex;gap:8px;align-items:center">
+          <input id="qinput" type="text" placeholder="Ask any question..." autofocus
+            onkeydown="if(event.key==='Enter')submitQuestion()" style="flex:1">
+          <button id="mic-btn" onclick="toggleRecording()" style="width:56px;height:56px;border-radius:50%;border:3px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.1);font-size:28px;cursor:pointer;backdrop-filter:blur(8px);transition:all 0.2s;flex-shrink:0" onmousedown="this.style.transform='scale(0.9)'" onmouseup="this.style.transform='scale(1)'">🎤</button>
+        </div>
+        <div id="mic-status" style="text-align:center;color:#FCD34D;font-size:15px;min-height:20px;font-weight:600"></div>
         <button class="go-btn" onclick="submitQuestion()">Let's Find Out! 🚀</button>
       </div>
       <div class="suggestions">${sugs}</div>
@@ -528,6 +533,111 @@ function unlockAudio() {
 }
 document.addEventListener('click', unlockAudio, { once: true });
 document.addEventListener('touchstart', unlockAudio, { once: true });
+
+// ─── VOICE INPUT (STT) ─────────────────────────────────────────────────────
+let mediaRecorder = null;
+let audioChunks = [];
+let isRecording = false;
+
+async function startRecording() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    // Use webm — Whisper supports it and it's well supported by browsers
+    mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+    audioChunks = [];
+    
+    mediaRecorder.ondataavailable = (e) => {
+      if (e.data.size > 0) audioChunks.push(e.data);
+    };
+    
+    mediaRecorder.onstop = async () => {
+      // Stop all tracks to release the mic
+      stream.getTracks().forEach(t => t.stop());
+      
+      const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+      if (audioBlob.size < 1000) return; // too short, ignore
+      
+      // Show transcribing state
+      const micBtn = document.getElementById('mic-btn');
+      if (micBtn) { micBtn.textContent = '✨'; micBtn.style.opacity = '0.5'; }
+      const micStatus = document.getElementById('mic-status');
+      if (micStatus) micStatus.textContent = 'Listening...';
+      
+      try {
+        const text = await transcribeAudio(audioBlob);
+        if (text) {
+          const input = document.getElementById('qinput');
+          if (input) {
+            input.value = text;
+            input.focus();
+          }
+          if (micStatus) micStatus.textContent = '';
+          // Auto-submit after a beat so they can see what was heard
+          setTimeout(submitQuestion, 800);
+        } else {
+          if (micStatus) micStatus.textContent = "Didn't catch that — try again!";
+          setTimeout(() => { if (micStatus) micStatus.textContent = ''; }, 2500);
+        }
+      } catch (err) {
+        console.error('STT error:', err);
+        if (micStatus) micStatus.textContent = "Oops, try again!";
+        setTimeout(() => { if (micStatus) micStatus.textContent = ''; }, 2500);
+      }
+      
+      if (micBtn) { micBtn.textContent = '🎤'; micBtn.style.opacity = '1'; }
+      isRecording = false;
+    };
+    
+    mediaRecorder.start();
+    isRecording = true;
+    const micBtn = document.getElementById('mic-btn');
+    if (micBtn) {
+      micBtn.textContent = '⏹️';
+      micBtn.style.borderColor = '#EF4444';
+      micBtn.style.background = 'rgba(239,68,68,0.2)';
+      micBtn.style.animation = 'micPulse 1.5s ease-in-out infinite';
+    }
+    const micStatus = document.getElementById('mic-status');
+    if (micStatus) micStatus.textContent = 'Listening... tap ⏹️ when done';
+  } catch (err) {
+    console.error('Mic access denied:', err);
+    const micStatus = document.getElementById('mic-status');
+    if (micStatus) micStatus.textContent = 'Mic access needed!';
+    setTimeout(() => { if (micStatus) micStatus.textContent = ''; }, 3000);
+  }
+}
+
+function stopRecording() {
+  if (mediaRecorder && mediaRecorder.state === 'recording') {
+    mediaRecorder.stop();
+  }
+}
+
+function toggleRecording() {
+  if (isRecording) {
+    stopRecording();
+  } else {
+    startRecording();
+  }
+}
+
+async function transcribeAudio(audioBlob) {
+  const formData = new FormData();
+  formData.append('audio', audioBlob, 'question.webm');
+  
+  const res = await fetch('/api/stt', {
+    method: 'POST',
+    body: formData
+  });
+  
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || 'Transcription failed');
+  }
+  
+  const data = await res.json();
+  return data.text || '';
+}
 
 function toggleSound() {
   ttsEnabled = !ttsEnabled;

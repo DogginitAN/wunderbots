@@ -163,6 +163,50 @@ async def api_tts(request):
         return JSONResponse({"error": str(e)}, status_code=500)
 
 
+async def api_stt(request):
+    """Transcribe audio to text using Groq Whisper.
+    
+    POST /api/stt
+    Content-Type: multipart/form-data
+    Body: audio file in 'audio' field
+    
+    Returns: { "text": "transcribed question" }
+    """
+    try:
+        form = await request.form()
+        audio_file = form.get("audio")
+        
+        if not audio_file:
+            return JSONResponse({"error": "No audio file provided"}, status_code=400)
+        
+        # Read the uploaded audio bytes
+        audio_bytes = await audio_file.read()
+        
+        if len(audio_bytes) < 1000:
+            return JSONResponse({"error": "Audio too short"}, status_code=400)
+        
+        log.info(f"STT: received {len(audio_bytes)} bytes of audio")
+        t0 = time.time()
+        
+        # Send to Groq Whisper
+        transcription = client.audio.transcriptions.create(
+            file=("question.webm", audio_bytes),
+            model="whisper-large-v3-turbo",
+            language="en",
+            temperature=0.0,
+            prompt="A child asking a curious question about science, nature, or how things work.",
+        )
+        
+        text = transcription.text.strip()
+        log.info(f"STT done: {time.time() - t0:.2f}s, text='{text}'")
+        
+        return JSONResponse({"text": text})
+        
+    except Exception as e:
+        log.error(f"STT error: {e}")
+        return JSONResponse({"error": str(e)}, status_code=500)
+
+
 static_dir = os.path.join(os.path.dirname(__file__), "static")
 
 routes = [
@@ -170,6 +214,7 @@ routes = [
     Route("/health", health),
     Route("/api/generate", api_generate, methods=["POST"]),
     Route("/api/tts", api_tts, methods=["POST"]),
+    Route("/api/stt", api_stt, methods=["POST"]),
     Mount("/static", StaticFiles(directory=static_dir), name="static"),
 ]
 
