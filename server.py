@@ -182,6 +182,7 @@ async def api_tts(request):
         text = body.get("text", "").strip()
         voice = body.get("voice", "troy")
         emotion = body.get("emotion", "neutral")
+        character = body.get("character", "")
         slug = body.get("slug", "")
         scene_key = body.get("scene_key", "")
         
@@ -191,7 +192,7 @@ async def api_tts(request):
         log.info(f"TTS: voice={voice}, emotion={emotion}, text='{text[:50]}...'")
         t0 = time.time()
         
-        audio_bytes = generate_speech(text, voice, emotion)
+        audio_bytes = generate_speech(text, voice, emotion, character)
         
         log.info(f"TTS done: {time.time() - t0:.2f}s, {len(audio_bytes)} bytes")
         

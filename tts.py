@@ -45,24 +45,42 @@ EXPERT_VOICE_POOL = [
     "ThT5KcBeYPX3keUQqHPh",   # "Dorothy" — warm older female
 ]
 
-# ─── Emotion → voice settings mapping ────────────────────────────────────────
-# ElevenLabs doesn't use explicit vocal directions like Groq Orpheus.
-# Instead, it reads emotion from text cues and we tune stability/similarity.
-# Lower stability = more expressive/emotional, higher = more consistent.
+# ─── Emotion → voice settings + stage directions ─────────────────────────────
+# ElevenLabs reads emotion from textual cues. We prepend stage directions
+# that make the voice more animated and expressive — like a cartoon show.
+# Lower stability = more expressive delivery, more variation.
 
 EMOTION_SETTINGS = {
-    "excited":    {"stability": 0.3, "similarity_boost": 0.8},
-    "happy":      {"stability": 0.4, "similarity_boost": 0.75},
-    "silly":      {"stability": 0.25, "similarity_boost": 0.7},
-    "surprised":  {"stability": 0.3, "similarity_boost": 0.75},
-    "explaining": {"stability": 0.55, "similarity_boost": 0.8},
-    "thinking":   {"stability": 0.5, "similarity_boost": 0.8},
-    "shy":        {"stability": 0.6, "similarity_boost": 0.85},
-    "neutral":    {"stability": 0.5, "similarity_boost": 0.75},
+    "excited":    {"stability": 0.2, "similarity_boost": 0.75, "style": 0.4},
+    "happy":      {"stability": 0.25, "similarity_boost": 0.75, "style": 0.3},
+    "silly":      {"stability": 0.15, "similarity_boost": 0.65, "style": 0.5},
+    "surprised":  {"stability": 0.2, "similarity_boost": 0.7, "style": 0.4},
+    "explaining": {"stability": 0.35, "similarity_boost": 0.8, "style": 0.2},
+    "thinking":   {"stability": 0.35, "similarity_boost": 0.8, "style": 0.2},
+    "shy":        {"stability": 0.4, "similarity_boost": 0.85, "style": 0.15},
+    "neutral":    {"stability": 0.3, "similarity_boost": 0.75, "style": 0.2},
 }
 
-# For backward compat with the old Groq module
-EMOTION_DIRECTIONS = {k: "" for k in EMOTION_SETTINGS}
+# Stage directions prepended to text — ElevenLabs interprets these as
+# performance cues, making the voice delivery more animated and character-like.
+# These are NOT spoken aloud; ElevenLabs uses them to color the delivery.
+EMOTION_DIRECTIONS = {
+    "excited":    "*with big excited energy, like a kid on Christmas morning*",
+    "happy":      "*warmly, with a big smile in the voice*",
+    "silly":      "*being goofy and playful, hamming it up*",
+    "surprised":  "*gasping with genuine surprise and wonder*",
+    "explaining": "*enthusiastically teaching, like a favorite teacher*",
+    "thinking":   "*thoughtfully, working through an idea out loud*",
+    "shy":        "*softly and gently, a little quiet but sincere*",
+    "neutral":    "*in a warm, friendly, animated tone*",
+}
+
+# Character-specific voice directions that layer on top of emotion
+CHARACTER_DIRECTIONS = {
+    "nova":  "Speaking as Nova, a confident and curious young adventurer. ",
+    "bolt":  "Speaking as Bolt, a hilariously energetic and silly kid who can't contain his excitement. ",
+    "pip":   "Speaking as Pip, a sweet, gentle, softly-spoken genius who's a little shy. ",
+}
 
 
 def build_expert_voice_map(characters: dict) -> dict:
@@ -81,13 +99,15 @@ def build_expert_voice_map(characters: dict) -> dict:
     return voice_map
 
 
-def generate_speech(text: str, voice_id: str, emotion: str = "neutral") -> bytes:
-    """Generate speech audio via ElevenLabs API.
+def generate_speech(text: str, voice_id: str, emotion: str = "neutral",
+                    character: str = "") -> bytes:
+    """Generate speech audio via ElevenLabs API with emotional stage directions.
 
     Args:
         text: The dialogue text to speak
         voice_id: ElevenLabs voice ID
-        emotion: Emotion key for voice settings tuning
+        emotion: Emotion key for voice settings + stage direction
+        character: Character ID for character-specific direction (optional)
 
     Returns:
         MP3 audio bytes
@@ -100,20 +120,31 @@ def generate_speech(text: str, voice_id: str, emotion: str = "neutral") -> bytes
 
     settings = EMOTION_SETTINGS.get(emotion, EMOTION_SETTINGS["neutral"])
 
+    # Build directed text: character direction + emotion direction + actual text
+    direction = ""
+    if character in CHARACTER_DIRECTIONS:
+        direction += CHARACTER_DIRECTIONS[character]
+    if emotion in EMOTION_DIRECTIONS:
+        direction += EMOTION_DIRECTIONS[emotion] + " "
+    directed_text = direction + text
+
     url = f"{ELEVENLABS_BASE}/text-to-speech/{voice_id}"
     headers = {
         "xi-api-key": ELEVENLABS_API_KEY,
         "Content-Type": "application/json",
     }
     payload = {
-        "text": text,
+        "text": directed_text,
         "model_id": MODEL_ID,
         "voice_settings": {
             "stability": settings["stability"],
             "similarity_boost": settings["similarity_boost"],
+            "style": settings.get("style", 0.0),
+            "use_speaker_boost": True,
         },
     }
 
+    log.info(f"TTS direction: [{direction.strip()[:60]}...] + {len(text)} chars")
     response = requests.post(url, json=payload, headers=headers, timeout=30)
 
     if response.status_code != 200:

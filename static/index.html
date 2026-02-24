@@ -157,7 +157,7 @@ let ttsEnabled = true;
 
 function sceneKey(aI, sI) { return aI+'-'+sI; }
 
-async function fetchTTS(text, voice, emotion, slug, sceneKey) {
+async function fetchTTS(text, voice, emotion, slug, sceneKey, character) {
   // First: check if audio is cached in the library
   if (slug && sceneKey) {
     try {
@@ -205,7 +205,8 @@ function prefetchAudio(fromAct, fromScene, count) {
       if (!audioCache.has(key) && scene.text && (scene.type === 'dialogue' || scene.type === 'explanation')) {
         const voice = voiceMap[scene.character] || 'pNInz6obpgDQGcFmaJgB';
         const emotion = scene.emotion || 'neutral';
-        fetchTTS(scene.text, voice, emotion, slug, key).then(url => { if (url) audioCache.set(key, url); });
+        const charId = scene.character || '';
+        fetchTTS(scene.text, voice, emotion, slug, key, charId).then(url => { if (url) audioCache.set(key, url); });
         fetched++;
       }
       sI++;
