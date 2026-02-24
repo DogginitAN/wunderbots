@@ -420,12 +420,10 @@ function advance() {
   // Play audio for dialogue/explanation scenes
   if ((next.type === "dialogue" || next.type === "explanation") && ttsEnabled) {
     const audioPlaying = playSceneAudio(state.actIdx, state.sceneIdx);
-    if (!audioPlaying) {
-      // No cached audio yet — use text timer as fallback
-      const len = (next.text||'').length;
-      autoTimer = setTimeout(advance, Math.max(3000, len * 70));
-    }
-    // If audio IS playing, onended callback handles advance — no timer needed
+    const len = (next.text||'').length;
+    // Always set a generous text fallback timer in case audio fails/doesn't fire onended
+    // If audio finishes first, onended advances and this timer is harmless
+    autoTimer = setTimeout(advance, audioPlaying ? Math.max(30000, len * 120) : Math.max(3000, len * 70));
   } else if (next.type === "transition") {
     autoTimer = setTimeout(advance, 3000);
   } else if (next.type !== "quiz" && next.type !== "celebration") {
