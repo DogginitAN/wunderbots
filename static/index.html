@@ -600,13 +600,21 @@ async function startRecording() {
       
       const blobType = mediaRecorder.mimeType || 'audio/mp4';
       const audioBlob = new Blob(audioChunks, { type: blobType });
-      if (audioBlob.size < 1000) return; // too short, ignore
+      console.log('Recording done:', audioChunks.length, 'chunks,', audioBlob.size, 'bytes, type:', blobType);
+      
+      const micBtn = document.getElementById('mic-btn');
+      const micStatus = document.getElementById('mic-status');
+      
+      if (audioBlob.size < 500) {
+        if (micStatus) micStatus.textContent = 'Recording too short — hold longer!';
+        setTimeout(() => { if (micStatus) micStatus.textContent = ''; }, 3000);
+        if (micBtn) { micBtn.textContent = '🎤'; micBtn.style.opacity = '1'; }
+        return;
+      }
       
       // Show transcribing state
-      const micBtn = document.getElementById('mic-btn');
       if (micBtn) { micBtn.textContent = '✨'; micBtn.style.opacity = '0.5'; }
-      const micStatus = document.getElementById('mic-status');
-      if (micStatus) micStatus.textContent = 'Listening...';
+      if (micStatus) micStatus.textContent = 'Transcribing... (' + Math.round(audioBlob.size/1024) + 'KB)';
       
       try {
         const text = await transcribeAudio(audioBlob);
@@ -621,12 +629,12 @@ async function startRecording() {
           setTimeout(submitQuestion, 800);
         } else {
           if (micStatus) micStatus.textContent = "Didn't catch that — try again!";
-          setTimeout(() => { if (micStatus) micStatus.textContent = ''; }, 2500);
+          setTimeout(() => { if (micStatus) micStatus.textContent = ''; }, 3000);
         }
       } catch (err) {
         console.error('STT error:', err);
-        if (micStatus) micStatus.textContent = "Oops, try again!";
-        setTimeout(() => { if (micStatus) micStatus.textContent = ''; }, 2500);
+        if (micStatus) micStatus.textContent = 'Error: ' + (err.message || 'try again');
+        setTimeout(() => { if (micStatus) micStatus.textContent = ''; }, 4000);
       }
       
       if (micBtn) { micBtn.textContent = '🎤'; micBtn.style.opacity = '1'; }
