@@ -682,19 +682,30 @@ async function transcribeAudio(audioBlob) {
   const formData = new FormData();
   const ext = (audioBlob.type || '').includes('webm') ? 'webm' : (audioBlob.type || '').includes('ogg') ? 'ogg' : 'mp4';
   formData.append('audio', audioBlob, 'question.' + ext);
+  console.log('Sending STT request:', audioBlob.size, 'bytes, ext:', ext);
   
-  const res = await fetch('/api/stt', {
-    method: 'POST',
-    body: formData
-  });
-  
-  if (!res.ok) {
-    const err = await res.json();
-    throw new Error(err.error || 'Transcription failed');
+  let res;
+  try {
+    res = await fetch('/api/stt', { method: 'POST', body: formData });
+  } catch (fetchErr) {
+    throw new Error('Network error: ' + fetchErr.message);
   }
   
-  const data = await res.json();
-  return data.text || '';
+  const bodyText = await res.text();
+  console.log('STT response:', res.status, bodyText.slice(0, 200));
+  
+  if (!res.ok) {
+    let msg = 'STT ' + res.status;
+    try { msg = JSON.parse(bodyText).error || msg; } catch(e) {}
+    throw new Error(msg);
+  }
+  
+  try {
+    const data = JSON.parse(bodyText);
+    return data.text || '';
+  } catch(e) {
+    throw new Error('Bad response: ' + bodyText.slice(0, 100));
+  }
 }
 
 // ─── EPISODE LIBRARY ────────────────────────────────────────────────────────
