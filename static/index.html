@@ -538,31 +538,12 @@ async function submitQuestion() {
     prefetchAudio(0, 0, 5);
     
     // Play first scene audio & start auto-advance
+    const len = (first?.text||'').length;
     if ((first?.type === 'dialogue' || first?.type === 'explanation') && ttsEnabled) {
-      // Poll for first audio to be ready (TTS takes 2-4s)
-      const firstKey = sceneKey(0, 0);
-      let tries = 0;
-      const waitForFirstAudio = () => {
-        tries++;
-        if (audioCache.has(firstKey)) {
-          const playing = playSceneAudio(0, 0);
-          if (!playing) {
-            const len = (first?.text||'').length;
-            autoTimer = setTimeout(advance, Math.max(3000, len * 70));
-          }
-        } else if (tries > 16) {
-          // Give up after 8s — use text timer
-          const len = (first?.text||'').length;
-          autoTimer = setTimeout(advance, Math.max(3000, len * 70));
-        } else {
-          setTimeout(waitForFirstAudio, 500);
-        }
-      };
-      setTimeout(waitForFirstAudio, 1000);
-    } else {
-      const len = (first?.text||'').length;
-      autoTimer = setTimeout(advance, Math.max(3000, len * 70));
+      setTimeout(() => playSceneAudio(0, 0), 1500);
     }
+    // Always set text timer — if audio plays, onended will advance and clear it
+    autoTimer = setTimeout(advance, Math.max(4000, len * 80));
 
   } catch (err) {
     alert("Oops! " + err.message + "\n\nTry again?");
