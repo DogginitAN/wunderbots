@@ -571,9 +571,19 @@ let isRecording = false;
 
 async function startRecording() {
   try {
+    // Check for secure context (HTTPS required for getUserMedia)
+    if (!window.isSecureContext) {
+      const micStatus = document.getElementById('mic-status');
+      if (micStatus) micStatus.textContent = 'Needs HTTPS for mic access';
+      return;
+    }
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    // Use webm — Whisper supports it and it's well supported by browsers
-    mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+    // Safari doesn't support audio/webm — use mp4 on Safari, webm elsewhere
+    let mimeType = 'audio/webm';
+    if (!MediaRecorder.isTypeSupported('audio/webm')) {
+      mimeType = 'audio/mp4';  // Safari/iOS fallback
+    }
+    mediaRecorder = new MediaRecorder(stream, { mimeType });
     audioChunks = [];
     
     mediaRecorder.ondataavailable = (e) => {
@@ -584,7 +594,7 @@ async function startRecording() {
       // Stop all tracks to release the mic
       stream.getTracks().forEach(t => t.stop());
       
-      const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+      const audioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType });
       if (audioBlob.size < 1000) return; // too short, ignore
       
       // Show transcribing state
@@ -630,9 +640,13 @@ async function startRecording() {
     const micStatus = document.getElementById('mic-status');
     if (micStatus) micStatus.textContent = 'Listening... tap ⏹️ when done';
   } catch (err) {
-    console.error('Mic access denied:', err);
+    console.error('Mic error:', err.name, err.message);
     const micStatus = document.getElementById('mic-status');
-    if (micStatus) micStatus.textContent = 'Mic access needed!';
+    let msg = 'Mic access needed!';
+    if (err.name === 'NotAllowedError') msg = 'Tap Allow when asked for mic access';
+    else if (err.name === 'NotFoundError') msg = 'No microphone found';
+    else if (err.name === 'NotSupportedError') msg = 'Mic not supported in this browser';
+    if (micStatus) micStatus.textContent = msg;
     setTimeout(() => { if (micStatus) micStatus.textContent = ''; }, 3000);
   }
 }
@@ -653,7 +667,8 @@ function toggleRecording() {
 
 async function transcribeAudio(audioBlob) {
   const formData = new FormData();
-  formData.append('audio', audioBlob, 'question.webm');
+  const ext = (audioBlob.type || '').includes('mp4') ? 'mp4' : 'webm';
+  formData.append('audio', audioBlob, 'question.' + ext);
   
   const res = await fetch('/api/stt', {
     method: 'POST',
