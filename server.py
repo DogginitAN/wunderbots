@@ -4,12 +4,13 @@ import json
 import time
 import logging
 from starlette.applications import Starlette
-from starlette.responses import JSONResponse, FileResponse
+from starlette.responses import JSONResponse, FileResponse, Response
 from starlette.routing import Route, Mount
 from starlette.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
 from openai import OpenAI
 from prompts import STAGE_1_SYSTEM, STAGE_1_USER, STAGE_2_SYSTEM, STAGE_2_USER
+from tts import build_expert_voice_map, generate_speech, EMOTION_DIRECTIONS
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("wunderbots")
@@ -19,6 +20,9 @@ client = OpenAI(
     api_key=os.environ.get("GROK_API_KEY"),
 )
 MODEL = os.environ.get("WUNDERBOTS_MODEL", "openai/gpt-oss-120b")
+
+# In-memory TTS cache: episode_key → { "act-scene" → wav_bytes }
+tts_cache: dict[str, dict[str, bytes]] = {}
 
 
 def clean_json(text: str) -> str:
@@ -94,6 +98,16 @@ async def api_generate(request):
             return JSONResponse({"error": "Question too long"}, status_code=400)
 
         episode = generate_episode(question)
+        
+        # Build voice map and attach to episode for frontend
+        characters = episode.get("characters", {})
+        voice_map = build_expert_voice_map(characters)
+        episode["voice_map"] = voice_map
+        
+        # Generate episode key for TTS caching
+        episode_key = f"{hash(question)}_{int(time.time())}"
+        episode["episode_key"] = episode_key
+        
         return JSONResponse(episode)
 
     except json.JSONDecodeError as e:
@@ -107,12 +121,55 @@ async def api_generate(request):
         return JSONResponse({"error": str(e)}, status_code=500)
 
 
+async def api_tts(request):
+    """Generate TTS audio for a single scene.
+    
+    POST /api/tts
+    {
+        "text": "What the character says",
+        "character": "nova",
+        "emotion": "excited",
+        "voice": "tara"  (from voice_map)
+    }
+    
+    Returns: audio/wav
+    """
+    try:
+        body = await request.json()
+        text = body.get("text", "").strip()
+        voice = body.get("voice", "troy")
+        emotion = body.get("emotion", "neutral")
+        
+        if not text:
+            return JSONResponse({"error": "No text provided"}, status_code=400)
+        
+        log.info(f"TTS: voice={voice}, emotion={emotion}, text='{text[:50]}...'")
+        t0 = time.time()
+        
+        audio_bytes = generate_speech(text, voice, emotion)
+        
+        log.info(f"TTS done: {time.time() - t0:.2f}s, {len(audio_bytes)} bytes")
+        
+        return Response(
+            content=audio_bytes,
+            media_type="audio/wav",
+            headers={
+                "Cache-Control": "public, max-age=3600",
+            },
+        )
+        
+    except Exception as e:
+        log.error(f"TTS error: {e}")
+        return JSONResponse({"error": str(e)}, status_code=500)
+
+
 static_dir = os.path.join(os.path.dirname(__file__), "static")
 
 routes = [
     Route("/", homepage),
     Route("/health", health),
     Route("/api/generate", api_generate, methods=["POST"]),
+    Route("/api/tts", api_tts, methods=["POST"]),
     Mount("/static", StaticFiles(directory=static_dir), name="static"),
 ]
 

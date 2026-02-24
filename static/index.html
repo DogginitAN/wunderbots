@@ -149,6 +149,72 @@ const SUGGESTIONS = [
 let state = { screen:"home", episode:null, actIdx:0, sceneIdx:0, displayed:[], waitingQuiz:false, finished:false, bgKey:"clubhouse", introduced:new Set() };
 let autoTimer = null;
 
+// ─── TTS AUDIO ENGINE ───────────────────────────────────────────────────────
+const audioCache = new Map();
+let currentAudio = null;
+let ttsEnabled = true;
+
+function sceneKey(aI, sI) { return aI+'-'+sI; }
+
+async function fetchTTS(text, voice, emotion) {
+  try {
+    const res = await fetch('/api/tts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, voice, emotion })
+    });
+    if (!res.ok) return null;
+    const blob = await res.blob();
+    return URL.createObjectURL(blob);
+  } catch (e) {
+    console.warn('TTS fetch failed:', e);
+    return null;
+  }
+}
+
+function prefetchAudio(fromAct, fromScene, count) {
+  if (!ttsEnabled || !state.episode) return;
+  const ep = state.episode;
+  const voiceMap = ep.voice_map || {};
+  let aI = fromAct, sI = fromScene, fetched = 0;
+  while (fetched < count && aI < ep.acts.length) {
+    const act = ep.acts[aI];
+    if (sI < act.scenes.length) {
+      const scene = act.scenes[sI];
+      const key = sceneKey(aI, sI);
+      if (!audioCache.has(key) && scene.text && (scene.type === 'dialogue' || scene.type === 'explanation')) {
+        const voice = voiceMap[scene.character] || 'troy';
+        const emotion = scene.emotion || 'neutral';
+        fetchTTS(scene.text, voice, emotion).then(url => { if (url) audioCache.set(key, url); });
+        fetched++;
+      }
+      sI++;
+    } else { aI++; sI = 0; }
+  }
+}
+
+function playSceneAudio(actIdx, sceneIdx) {
+  if (!ttsEnabled) return;
+  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+  const key = sceneKey(actIdx, sceneIdx);
+  const url = audioCache.get(key);
+  if (url) {
+    currentAudio = new Audio(url);
+    currentAudio.play().catch(e => console.warn('Audio play blocked:', e));
+    currentAudio.onended = () => {
+      currentAudio = null;
+      if (!state.waitingQuiz && !state.finished) {
+        autoTimer = setTimeout(advance, 800);
+      }
+    };
+  }
+  prefetchAudio(actIdx, sceneIdx + 1, 3);
+}
+
+function stopAudio() {
+  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+}
+
 // ─── RENDERING HELPERS ──────────────────────────────────────────────────────
 
 function getGrad(key) { return GRADIENTS[key] || DEFAULT_GRAD; }
@@ -209,7 +275,13 @@ function renderPlayer() {
 
   return `<div class="player" style="background:${grad.bg}">
     <div class="player-bg" style="background:${grad.ov}"></div>
-    <div class="player-banner"><div class="q">✨ ${ep.question}</div></div>
+    <div class="player-banner" style="display:flex;align-items:center;justify-content:space-between">
+      <div style="flex:1"></div>
+      <div class="q" style="flex:4;text-align:center">✨ ${ep.question}</div>
+      <div style="flex:1;text-align:right">
+        <button onclick="toggleSound()" style="background:none;border:none;font-size:20px;cursor:pointer;opacity:0.7">${ttsEnabled ? '🔊' : '🔇'}</button>
+      </div>
+    </div>
     <div class="scene-stream" id="scroller">${scenesHtml}</div>
     ${showTap ? `<div class="tap-bar" onclick="advance()"><span>Tap to continue →</span></div>` : ''}
   </div>`;
@@ -280,6 +352,7 @@ function getCurrentScene() {
 function advance() {
   if (state.waitingQuiz || state.finished) return;
   clearTimeout(autoTimer);
+  stopAudio();
   const ep = state.episode;
   const act = ep.acts[state.actIdx];
 
@@ -306,8 +379,13 @@ function advance() {
   render();
   scrollBottom();
 
-  // Auto-advance for transitions
-  if (next.type === "transition") {
+  // Play audio for dialogue/explanation scenes
+  if ((next.type === "dialogue" || next.type === "explanation") && ttsEnabled) {
+    playSceneAudio(state.actIdx, state.sceneIdx);
+    // Audio onended will handle auto-advance; set fallback timer
+    const len = (next.text||'').length;
+    autoTimer = setTimeout(advance, Math.max(5000, len * 100));
+  } else if (next.type === "transition") {
     autoTimer = setTimeout(advance, 3000);
   } else if (next.type !== "quiz" && next.type !== "celebration") {
     const len = (next.text||'').length;
@@ -359,6 +437,9 @@ function scrollBottom() {
 // ─── NAVIGATION ─────────────────────────────────────────────────────────────
 
 function goHome() {
+  stopAudio();
+  audioCache.forEach(url => URL.revokeObjectURL(url));
+  audioCache.clear();
   state = { screen:"home", episode:null, actIdx:0, sceneIdx:0, displayed:[], waitingQuiz:false, finished:false, bgKey:"clubhouse", introduced:new Set() };
   clearTimeout(autoTimer);
   render();
@@ -411,14 +492,30 @@ async function submitQuestion() {
 
     render();
 
-    // Start auto-advance
-    const len = (first?.text||'').length;
-    autoTimer = setTimeout(advance, Math.max(3000, len * 70));
+    // Prefetch first batch of audio
+    prefetchAudio(0, 0, 5);
+    
+    // Play first scene audio & start auto-advance
+    if ((first?.type === 'dialogue' || first?.type === 'explanation') && ttsEnabled) {
+      // Small delay to let first TTS fetch complete
+      setTimeout(() => playSceneAudio(0, 0), 1500);
+      const len = (first?.text||'').length;
+      autoTimer = setTimeout(advance, Math.max(5000, len * 100));
+    } else {
+      const len = (first?.text||'').length;
+      autoTimer = setTimeout(advance, Math.max(3000, len * 70));
+    }
 
   } catch (err) {
     alert("Oops! " + err.message + "\n\nTry again?");
     goHome();
   }
+}
+
+function toggleSound() {
+  ttsEnabled = !ttsEnabled;
+  if (!ttsEnabled) stopAudio();
+  render();
 }
 
 // ─── RENDER ─────────────────────────────────────────────────────────────────
