@@ -120,13 +120,9 @@ def generate_speech(text: str, voice_id: str, emotion: str = "neutral",
 
     settings = EMOTION_SETTINGS.get(emotion, EMOTION_SETTINGS["neutral"])
 
-    # Build directed text: character direction + emotion direction + actual text
-    direction = ""
-    if character in CHARACTER_DIRECTIONS:
-        direction += CHARACTER_DIRECTIONS[character]
-    if emotion in EMOTION_DIRECTIONS:
-        direction += EMOTION_DIRECTIONS[emotion] + " "
-    directed_text = direction + text
+    # ElevenLabs speaks ALL text aloud — no hidden stage directions.
+    # Expressiveness comes from voice_settings (stability, style, similarity).
+    directed_text = text
 
     url = f"{ELEVENLABS_BASE}/text-to-speech/{voice_id}"
     headers = {
@@ -144,7 +140,7 @@ def generate_speech(text: str, voice_id: str, emotion: str = "neutral",
         },
     }
 
-    log.info(f"TTS direction: [{direction.strip()[:60]}...] + {len(text)} chars")
+    log.info(f"TTS: char={character}, emotion={emotion}, {len(text)} chars")
     response = requests.post(url, json=payload, headers=headers, timeout=30)
 
     if response.status_code != 200:
