@@ -172,7 +172,7 @@ async function fetchTTS(text, voice, emotion, slug, sceneKey, character) {
   
   // Not cached — generate via TTS and let server cache it
   try {
-    const body = { text, voice, emotion };
+    const body = { text, voice, emotion, character };
     if (slug) body.slug = slug;
     if (sceneKey) body.scene_key = sceneKey;
     
@@ -190,28 +190,48 @@ async function fetchTTS(text, voice, emotion, slug, sceneKey, character) {
   }
 }
 
+// Audio fetch queue — processes 2 at a time to avoid rate limits
+let fetchQueue = [];
+let fetchActive = 0;
+const MAX_CONCURRENT_TTS = 2;
+
+function processFetchQueue() {
+  while (fetchActive < MAX_CONCURRENT_TTS && fetchQueue.length > 0) {
+    const job = fetchQueue.shift();
+    fetchActive++;
+    fetchTTS(job.text, job.voice, job.emotion, job.slug, job.key, job.charId)
+      .then(url => {
+        if (url) audioCache.set(job.key, url);
+      })
+      .finally(() => {
+        fetchActive--;
+        processFetchQueue();
+      });
+  }
+}
+
 function prefetchAudio(fromAct, fromScene, count) {
   if (!ttsEnabled || !state.episode) return;
   const ep = state.episode;
   const voiceMap = ep.voice_map || {};
-  // Compute slug for caching
   const slug = ep.question ? ep.question.toLowerCase().replace(/[^\w\s-]/g,'').replace(/[\s_-]+/g,'-').slice(0,60).replace(/-$/,'') : '';
-  let aI = fromAct, sI = fromScene, fetched = 0;
-  while (fetched < count && aI < ep.acts.length) {
+  let aI = fromAct, sI = fromScene, queued = 0;
+  while (queued < count && aI < ep.acts.length) {
     const act = ep.acts[aI];
     if (sI < act.scenes.length) {
       const scene = act.scenes[sI];
       const key = sceneKey(aI, sI);
-      if (!audioCache.has(key) && scene.text && (scene.type === 'dialogue' || scene.type === 'explanation')) {
+      if (!audioCache.has(key) && !fetchQueue.some(j => j.key === key) && scene.text && (scene.type === 'dialogue' || scene.type === 'explanation')) {
         const voice = voiceMap[scene.character] || 'pNInz6obpgDQGcFmaJgB';
         const emotion = scene.emotion || 'neutral';
         const charId = scene.character || '';
-        fetchTTS(scene.text, voice, emotion, slug, key, charId).then(url => { if (url) audioCache.set(key, url); });
-        fetched++;
+        fetchQueue.push({ text: scene.text, voice, emotion, slug, key, charId });
+        queued++;
       }
       sI++;
     } else { aI++; sI = 0; }
   }
+  processFetchQueue();
 }
 
 function playSceneAudio(actIdx, sceneIdx) {
