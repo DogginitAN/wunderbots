@@ -277,6 +277,16 @@ function renderHome() {
         <button class="go-btn" onclick="submitQuestion()">Let's Find Out! 🚀</button>
       </div>
       <div class="suggestions">${sugs}</div>
+      <div style="width:100%;max-width:480px;margin-top:32px">
+        <div style="text-align:center;margin-bottom:12px">
+          <span style="font-size:14px;font-weight:700;color:#A78BFA;letter-spacing:1.5px;font-family:'Fredoka',sans-serif">
+            📚 EPISODE LIBRARY
+          </span>
+        </div>
+        <div id="library-list" style="max-height:320px;overflow-y:auto;padding:0 4px">
+          <div style="text-align:center;color:#A78BFA;font-size:15px;padding:12px">Loading...</div>
+        </div>
+      </div>
     </div>
   </div>`;
 }
