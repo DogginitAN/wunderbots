@@ -516,40 +516,61 @@ async function submitQuestion() {
     }
 
     const episode = await res.json();
-
-    // Start playing
-    state.screen = "playing";
-    state.episode = episode;
-    state.actIdx = 0;
-    state.sceneIdx = 0;
-    state.displayed = [{ actIdx: 0, sceneIdx: 0 }];
-    state.waitingQuiz = false;
-    state.finished = false;
-    state.bgKey = "clubhouse";
-    state.introduced = new Set();
-
-    // Set initial background from first scene
-    const first = episode.acts[0]?.scenes[0];
-    if (first?.background && GRADIENTS[first.background]) state.bgKey = first.background;
-
-    render();
-
-    // Prefetch first batch of audio
-    prefetchAudio(0, 0, 5);
-    
-    // Play first scene audio & start auto-advance
-    const len = (first?.text||'').length;
-    if ((first?.type === 'dialogue' || first?.type === 'explanation') && ttsEnabled) {
-      // Delay slightly to let prefetch start, then play
-      setTimeout(() => playSceneAudio(0, 0), 2000);
-    }
-    // Text timer always runs — audio onended can override if it finishes first
-    autoTimer = setTimeout(advance, Math.max(4000, len * 80));
+    await startEpisode(episode);
 
   } catch (err) {
     alert("Oops! " + err.message + "\n\nTry again?");
     goHome();
   }
+}
+
+// ─── START EPISODE WITH AUDIO WARM-UP ─────────────────────────────────────
+async function startEpisode(episode) {
+  state.episode = episode;
+  state.actIdx = 0;
+  state.sceneIdx = 0;
+  state.displayed = [{ actIdx: 0, sceneIdx: 0 }];
+  state.waitingQuiz = false;
+  state.finished = false;
+  state.bgKey = "clubhouse";
+  state.introduced = new Set();
+
+  const first = episode.acts[0]?.scenes[0];
+  if (first?.background && GRADIENTS[first.background]) state.bgKey = first.background;
+
+  // Start prefetching audio for first 8 scenes
+  prefetchAudio(0, 0, 8);
+
+  if (ttsEnabled) {
+    // Show "Creating voices..." on loading screen
+    const statusEl = document.getElementById('loading-text');
+    if (statusEl) statusEl.textContent = 'Creating character voices...';
+
+    // Wait for first scene audio to be ready (poll every 500ms, up to 8s)
+    const firstKey = sceneKey(0, 0);
+    let ready = false;
+    for (let i = 0; i < 16; i++) {
+      if (audioCache.has(firstKey)) { ready = true; break; }
+      await new Promise(r => setTimeout(r, 500));
+    }
+
+    // Bonus: wait a tiny bit more for scene 2-3 to cache too
+    if (ready) {
+      if (statusEl) statusEl.textContent = 'Almost ready...';
+      await new Promise(r => setTimeout(r, 1500));
+    }
+  }
+
+  // NOW start playing
+  state.screen = "playing";
+  render();
+
+  // Play first scene audio
+  if (ttsEnabled) playSceneAudio(0, 0);
+
+  // Text timer as fallback
+  const len = (first?.text||'').length;
+  autoTimer = setTimeout(advance, Math.max(4000, len * 80));
 }
 
 // iOS requires a user gesture to unlock audio playback.
@@ -766,7 +787,7 @@ async function playLibraryEpisode(slug) {
     const res = await fetch('/api/library/' + slug);
     if (!res.ok) throw new Error('Episode not found');
     const episode = await res.json();
-    startEpisode(episode);
+    await startEpisode(episode);
   } catch (e) {
     console.error('Library play error:', e);
     document.getElementById('loading').style.display = 'none';
