@@ -1,0 +1,415 @@
+{
+  "episode_id": "ep001",
+  "question": "How do airplanes fly?",
+  "answer_summary": "Airplanes stay up by creating lift with their wings, pushing forward with thrust, and balancing all the forces so they don\u2019t fall or stall.",
+  "answer_detailed": "When an airplane moves forward, air flows over and under its specially shaped wings. The wing shape (airfoil) makes the air on top travel faster, lowering pressure and creating lift. Engines generate thrust that overcomes drag, while pilots use control surfaces to keep the plane stable and steer it. All four forces\u2014lift, weight, thrust, and drag\u2014must be balanced for smooth flight.",
+  "characters": {
+    "nova": {
+      "id": "nova",
+      "name": "Nova",
+      "role": "guide",
+      "color": "#7C3AED",
+      "accentColor": "#FCD34D",
+      "emoji": "\u2b50",
+      "personality": "curious and brave"
+    },
+    "bolt": {
+      "id": "bolt",
+      "name": "Bolt",
+      "role": "guide",
+      "color": "#2563EB",
+      "accentColor": "#FDE047",
+      "emoji": "\u26a1",
+      "personality": "silly and energetic"
+    },
+    "pip": {
+      "id": "pip",
+      "name": "Pip",
+      "role": "guide",
+      "color": "#16A34A",
+      "accentColor": "#F9A8D4",
+      "emoji": "\ud83c\udf31",
+      "personality": "shy but smart"
+    },
+    "captain_skylar": {
+      "id": "captain_skylar",
+      "name": "Captain Skylar",
+      "role": "expert",
+      "color": "#D97706",
+      "accentColor": "#FBBF24",
+      "emoji": "\ud83d\udd2c",
+      "personality": "Adventurous and storytelling"
+    },
+    "dr_breeze": {
+      "id": "dr_breeze",
+      "name": "Dr. Breeze",
+      "role": "expert",
+      "color": "#0EA5E9",
+      "accentColor": "#7DD3FC",
+      "emoji": "\ud83d\udd2c",
+      "personality": "Inventive and curious"
+    }
+  },
+  "acts": [
+    {
+      "act": 1,
+      "title": "The Question",
+      "scenes": [
+        {
+          "type": "dialogue",
+          "character": "nova",
+          "emotion": "excited",
+          "text": "Hey team, I saw a huge plane soaring above the clouds\u2014how does it stay up there?",
+          "background": "clubhouse",
+          "charactersPresent": [
+            "nova",
+            "bolt",
+            "pip"
+          ]
+        },
+        {
+          "type": "dialogue",
+          "character": "bolt",
+          "emotion": "silly",
+          "text": "Maybe it\u2019s tied to a giant invisible balloon that the wind pulls up!"
+        },
+        {
+          "type": "dialogue",
+          "character": "pip",
+          "emotion": "thinking",
+          "text": "Birds use their wings, so maybe planes just copy birds."
+        },
+        {
+          "type": "dialogue",
+          "character": "nova",
+          "emotion": "excited",
+          "text": "But WHY does a metal wing work the same way as a bird\u2019s feather?"
+        },
+        {
+          "type": "transition",
+          "destination": "museum",
+          "text": "Zoom! The trio rockets to the Aviation Museum on a shiny scooter."
+        },
+        {
+          "type": "dialogue",
+          "character": "bolt",
+          "emotion": "silly",
+          "text": "I bet the plane has a secret jet\u2011pack made of marshmallows!"
+        },
+        {
+          "type": "dialogue",
+          "character": "pip",
+          "emotion": "thinking",
+          "text": "If we can measure the air around a wing, we might see something called lift."
+        }
+      ]
+    },
+    {
+      "act": 2,
+      "title": "Expert 1 \u2013 Captain Skylar",
+      "scenes": [
+        {
+          "type": "dialogue",
+          "character": "captain_skylar",
+          "emotion": "excited",
+          "text": "Welcome, explorers! This vintage prop plane shows the magic of lift.",
+          "background": "museum",
+          "charactersPresent": [
+            "nova",
+            "bolt",
+            "pip",
+            "captain_skylar"
+          ]
+        },
+        {
+          "type": "dialogue",
+          "character": "pip",
+          "emotion": "thinking",
+          "text": "Its wings are curved\u2014like a spoon scooping through soup."
+        },
+        {
+          "type": "explanation",
+          "character": "captain_skylar",
+          "emotion": "explaining",
+          "text": "That curve is an airfoil. Air moves faster over the top, creating lower pressure and lift.",
+          "visual": "airfoil_lift"
+        },
+        {
+          "type": "dialogue",
+          "character": "bolt",
+          "emotion": "silly",
+          "text": "So the wing is a magic spoon that eats air and spits it out upward!"
+        },
+        {
+          "type": "dialogue",
+          "character": "pip",
+          "emotion": "thinking",
+          "text": "Just like a boat rides on water, the plane rides on higher\u2011pressure air below the wing."
+        },
+        {
+          "type": "dialogue",
+          "character": "nova",
+          "emotion": "excited",
+          "text": "But WHY does faster air on top actually lower the pressure?"
+        },
+        {
+          "type": "explanation",
+          "character": "captain_skylar",
+          "emotion": "explaining",
+          "text": "According to Bernoulli\u2019s principle, when a fluid\u2019s speed increases, its static pressure drops. The wing\u2019s shape forces the air on top to travel farther in the same time, creating lift."
+        },
+        {
+          "type": "quiz",
+          "question": "Why does the wing\u2019s top surface create lower pressure than the bottom?",
+          "options": [
+            {
+              "text": "Because the air on top moves faster, lowering pressure.",
+              "correct": true,
+              "response": "Exactly! Faster airflow on top means lower pressure, which lifts the plane."
+            },
+            {
+              "text": "Because the wing is made of lighter material on the top.",
+              "correct": false,
+              "response": "Good guess, but the material is the same. It\u2019s the speed of the air that matters."
+            },
+            {
+              "text": "Because the pilot pushes the wing upward with a hidden lever.",
+              "correct": false,
+              "response": "That would be a cool trick! In reality, the shape of the wing does the work."
+            }
+          ]
+        },
+        {
+          "type": "transition",
+          "destination": "science_lab",
+          "text": "With lift in mind, the crew zooms to the science lab, where a wind tunnel whistles."
+        }
+      ]
+    },
+    {
+      "act": 3,
+      "title": "Expert 2 \u2013 Dr. Breeze",
+      "scenes": [
+        {
+          "type": "dialogue",
+          "character": "dr_breeze",
+          "emotion": "excited",
+          "text": "Hello, pilots of curiosity! Let\u2019s watch air rush over this foam airfoil in the tunnel.",
+          "background": "science_lab",
+          "charactersPresent": [
+            "nova",
+            "bolt",
+            "pip",
+            "dr_breeze"
+          ]
+        },
+        {
+          "type": "dialogue",
+          "character": "pip",
+          "emotion": "thinking",
+          "text": "I see the air pushing the model forward\u2014like pedaling a bike downhill."
+        },
+        {
+          "type": "explanation",
+          "character": "dr_breeze",
+          "emotion": "explaining",
+          "text": "Engines provide thrust, pushing the plane forward, while drag is the aerodynamic resistance that tries to slow it down.",
+          "visual": "thrust_drag_balance"
+        },
+        {
+          "type": "dialogue",
+          "character": "bolt",
+          "emotion": "silly",
+          "text": "So the engine is a giant fan that blows the plane like a superhero cape!"
+        },
+        {
+          "type": "dialogue",
+          "character": "pip",
+          "emotion": "thinking",
+          "text": "If thrust is the bike\u2019s pedaling power, drag is the wind pushing against you."
+        },
+        {
+          "type": "dialogue",
+          "character": "nova",
+          "emotion": "excited",
+          "text": "But WHY does the shape of the exhaust stream matter for thrust?"
+        },
+        {
+          "type": "explanation",
+          "character": "dr_breeze",
+          "emotion": "explaining",
+          "text": "Newton\u2019s third law says every action has an equal opposite reaction. A turbofan accelerates a huge mass of air backward, and the plane moves forward. The faster and more massive the rearward flow, the greater the thrust."
+        },
+        {
+          "type": "quiz",
+          "question": "What does thrust have to do with drag?",
+          "options": [
+            {
+              "text": "Thrust must be greater than drag for the plane to speed up.",
+              "correct": true,
+              "response": "Right on! More thrust than drag lets the airplane accelerate."
+            },
+            {
+              "text": "Thrust and drag are the same force, just called differently.",
+              "correct": false,
+              "response": "Almost! They\u2019re opposite forces\u2014thrust pushes forward, drag pulls back."
+            },
+            {
+              "text": "Drag only happens when the engines are off.",
+              "correct": false,
+              "response": "Drag is always present, even when the engines are running."
+            }
+          ]
+        },
+        {
+          "type": "transition",
+          "destination": "museum",
+          "text": "Armed with thrust knowledge, the team zips back to the museum for a hands\u2011on flight test."
+        }
+      ]
+    },
+    {
+      "act": 4,
+      "title": "The Observation",
+      "scenes": [
+        {
+          "type": "dialogue",
+          "character": "captain_skylar",
+          "emotion": "excited",
+          "text": "Step into the simulator! These tiny flaps are the plane\u2019s control surfaces.",
+          "background": "museum",
+          "charactersPresent": [
+            "nova",
+            "bolt",
+            "pip",
+            "captain_skylar",
+            "dr_breeze"
+          ]
+        },
+        {
+          "type": "explanation",
+          "character": "pip",
+          "emotion": "shy",
+          "text": "Lift keeps us up, thrust moves us forward, and the flaps steer us\u2014just like a boat uses a rudder, a sail, and a motor together."
+        },
+        {
+          "type": "dialogue",
+          "character": "bolt",
+          "emotion": "silly",
+          "text": "Are ailerons tiny wings that flap like hummingbirds to turn the plane?"
+        },
+        {
+          "type": "dialogue",
+          "character": "nova",
+          "emotion": "excited",
+          "text": "But WHY does moving a small flap change the whole airplane\u2019s direction?"
+        },
+        {
+          "type": "explanation",
+          "character": "dr_breeze",
+          "emotion": "explaining",
+          "text": "Raising one aileron reduces lift on that wing while the opposite aileron stays level, causing the plane to roll. Elevators tilt the nose up or down (pitch), and the rudder yaws left or right. Together they give full 3\u2011D control.",
+          "visual": "control_surfaces"
+        },
+        {
+          "type": "quiz",
+          "question": "How do ailerons help the plane turn?",
+          "options": [
+            {
+              "text": "They change the lift on each wing, causing the plane to roll.",
+              "correct": true,
+              "response": "Exactly! By raising one wing\u2019s lift and lowering the other\u2019s, the plane rolls into a turn."
+            },
+            {
+              "text": "They make the engine spin faster on one side.",
+              "correct": false,
+              "response": "Nice idea, but the engines stay the same. Ailerons work by adjusting wing lift."
+            },
+            {
+              "text": "They release a burst of air to push the plane sideways.",
+              "correct": false,
+              "response": "Creative! The turning comes from lift differences, not a side\u2011blow of air."
+            }
+          ]
+        },
+        {
+          "type": "transition",
+          "destination": "clubhouse",
+          "text": "The simulator powers down, and the friends glide back to the clubhouse, minds buzzing."
+        }
+      ]
+    },
+    {
+      "act": 5,
+      "title": "The Answer",
+      "scenes": [
+        {
+          "type": "dialogue",
+          "character": "nova",
+          "emotion": "excited",
+          "text": "We\u2019ve discovered the secret: lift from the wing\u2019s shape, thrust from the engines, and balanced control surfaces keep the plane steady.",
+          "background": "clubhouse",
+          "charactersPresent": [
+            "nova",
+            "bolt",
+            "pip",
+            "captain_skylar",
+            "dr_breeze"
+          ]
+        },
+        {
+          "type": "dialogue",
+          "character": "bolt",
+          "emotion": "happy",
+          "text": "So it\u2019s not a giant balloon or marshmallow jet\u2011pack\u2014it's clever physics that makes the sky a playground!"
+        },
+        {
+          "type": "dialogue",
+          "character": "pip",
+          "emotion": "shy",
+          "text": "In technical terms: airfoil curvature creates a pressure gradient, engines generate thrust via Newton\u2019s third law, and ailerons, elevators, and rudders manage pitch, roll, and yaw."
+        },
+        {
+          "type": "dialogue",
+          "character": "captain_skylar",
+          "emotion": "happy",
+          "text": "You\u2019ve all earned your pilot\u2019s badge\u2014keep looking up and asking why!"
+        },
+        {
+          "type": "dialogue",
+          "character": "dr_breeze",
+          "emotion": "happy",
+          "text": "And remember, the next breakthrough might be a wing that flexes like a hummingbird\u2019s feather\u2014science never stops soaring."
+        },
+        {
+          "type": "celebration",
+          "text": "The friends burst into cheers, fireworks of paper planes fluttering around as the episode ends."
+        }
+      ]
+    }
+  ],
+  "key_visuals": [
+    {
+      "id": "airfoil_lift",
+      "description": "Diagram showing airflow speed differences above and below a curved airfoil, with pressure arrows indicating lift.",
+      "type": "diagram"
+    },
+    {
+      "id": "thrust_drag_balance",
+      "description": "Side view of an airplane with arrows for thrust forward and drag backward, plus lift upward and weight downward, illustrating force balance.",
+      "type": "diagram"
+    },
+    {
+      "id": "control_surfaces",
+      "description": "Cutaway view of a plane highlighting ailerons, elevator, and rudder with arrows showing pitch, roll, and yaw motions.",
+      "type": "diagram"
+    }
+  ],
+  "voice_map": {
+    "nova": "tara",
+    "bolt": "austin",
+    "pip": "leah",
+    "captain_skylar": "troy",
+    "dr_breeze": "hannah"
+  }
+}

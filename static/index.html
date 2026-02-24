@@ -157,12 +157,29 @@ let ttsEnabled = true;
 
 function sceneKey(aI, sI) { return aI+'-'+sI; }
 
-async function fetchTTS(text, voice, emotion) {
+async function fetchTTS(text, voice, emotion, slug, sceneKey) {
+  // First: check if audio is cached in the library
+  if (slug && sceneKey) {
+    try {
+      const cached = await fetch('/api/library/' + slug + '/audio/' + sceneKey);
+      if (cached.ok) {
+        const blob = await cached.blob();
+        console.log('Audio cache hit:', sceneKey);
+        return URL.createObjectURL(blob);
+      }
+    } catch (e) { /* cache miss, fall through to TTS */ }
+  }
+  
+  // Not cached — generate via TTS and let server cache it
   try {
+    const body = { text, voice, emotion };
+    if (slug) body.slug = slug;
+    if (sceneKey) body.scene_key = sceneKey;
+    
     const res = await fetch('/api/tts', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text, voice, emotion })
+      body: JSON.stringify(body)
     });
     if (!res.ok) return null;
     const blob = await res.blob();
@@ -177,6 +194,8 @@ function prefetchAudio(fromAct, fromScene, count) {
   if (!ttsEnabled || !state.episode) return;
   const ep = state.episode;
   const voiceMap = ep.voice_map || {};
+  // Compute slug for caching
+  const slug = ep.question ? ep.question.toLowerCase().replace(/[^\w\s-]/g,'').replace(/[\s_-]+/g,'-').slice(0,60).replace(/-$/,'') : '';
   let aI = fromAct, sI = fromScene, fetched = 0;
   while (fetched < count && aI < ep.acts.length) {
     const act = ep.acts[aI];
@@ -186,7 +205,7 @@ function prefetchAudio(fromAct, fromScene, count) {
       if (!audioCache.has(key) && scene.text && (scene.type === 'dialogue' || scene.type === 'explanation')) {
         const voice = voiceMap[scene.character] || 'troy';
         const emotion = scene.emotion || 'neutral';
-        fetchTTS(scene.text, voice, emotion).then(url => { if (url) audioCache.set(key, url); });
+        fetchTTS(scene.text, voice, emotion, slug, key).then(url => { if (url) audioCache.set(key, url); });
         fetched++;
       }
       sI++;
@@ -442,6 +461,7 @@ function scrollBottom() {
 // ─── NAVIGATION ─────────────────────────────────────────────────────────────
 
 function goHome() {
+  loadLibrary(); // Refresh library in case a new episode was just generated
   stopAudio();
   audioCache.forEach(url => URL.revokeObjectURL(url));
   audioCache.clear();
@@ -638,6 +658,71 @@ async function transcribeAudio(audioBlob) {
   const data = await res.json();
   return data.text || '';
 }
+
+// ─── EPISODE LIBRARY ────────────────────────────────────────────────────────
+let libraryEpisodes = [];
+
+async function loadLibrary() {
+  try {
+    const res = await fetch('/api/library');
+    if (!res.ok) return;
+    const data = await res.json();
+    libraryEpisodes = data.episodes || [];
+    renderLibrary();
+  } catch (e) {
+    console.error('Library load error:', e);
+  }
+}
+
+function renderLibrary() {
+  const container = document.getElementById('library-list');
+  if (!container) return;
+  
+  if (libraryEpisodes.length === 0) {
+    container.innerHTML = '<div style="text-align:center;color:#A78BFA;font-size:15px;padding:12px">No saved episodes yet — ask a question to get started!</div>';
+    return;
+  }
+  
+  container.innerHTML = libraryEpisodes.map(ep => `
+    <button onclick="playLibraryEpisode('${ep.slug}')" style="
+      display:block; width:100%; padding:16px 20px; margin-bottom:10px;
+      background:rgba(255,255,255,0.08); border:2px solid rgba(255,255,255,0.15);
+      border-radius:16px; cursor:pointer; text-align:left;
+      transition:all 0.2s; backdrop-filter:blur(4px);
+    " onmouseenter="this.style.background='rgba(255,255,255,0.15)';this.style.borderColor='#FCD34D'"
+       onmouseleave="this.style.background='rgba(255,255,255,0.08)';this.style.borderColor='rgba(255,255,255,0.15)'"
+    >
+      <div style="font-size:18px;font-weight:700;color:white;font-family:'Fredoka',sans-serif;margin-bottom:4px">
+        ✨ ${ep.question}
+      </div>
+      <div style="font-size:13px;color:#C4B5FD;font-family:'Fredoka',sans-serif;line-height:1.4">
+        ${ep.answer_summary || 'Tap to replay!'}
+      </div>
+    </button>
+  `).join('');
+}
+
+async function playLibraryEpisode(slug) {
+  // Show loading
+  document.getElementById('home').style.display = 'none';
+  document.getElementById('loading').style.display = 'flex';
+  document.getElementById('loading-text').textContent = 'Loading saved episode...';
+  
+  try {
+    const res = await fetch('/api/library/' + slug);
+    if (!res.ok) throw new Error('Episode not found');
+    const episode = await res.json();
+    startEpisode(episode);
+  } catch (e) {
+    console.error('Library play error:', e);
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('home').style.display = 'flex';
+    alert('Could not load episode — try again!');
+  }
+}
+
+// Load library on page load
+document.addEventListener('DOMContentLoaded', loadLibrary);
 
 function toggleSound() {
   ttsEnabled = !ttsEnabled;

@@ -1,0 +1,375 @@
+{
+  "episode_id": "rainbow_001",
+  "question": "How do rainbows form?",
+  "answer_summary": "Rainbows appear when sunlight bends, reflects, and splits inside round water droplets, spreading into a spectrum of colors.",
+  "answer_detailed": "Sunlight first refracts as it enters a spherical raindrop, then undergoes total internal reflection off the back of the drop, and refracts again as it exits. Because each wavelength bends a slightly different amount, the light separates into red, orange, yellow, green, blue, indigo, and violet, forming a curved arc.",
+  "characters": {
+    "nova": {
+      "id": "nova",
+      "name": "Nova",
+      "role": "guide",
+      "color": "#7C3AED",
+      "accentColor": "#FCD34D",
+      "emoji": "\u2b50",
+      "personality": "curious and brave"
+    },
+    "bolt": {
+      "id": "bolt",
+      "name": "Bolt",
+      "role": "guide",
+      "color": "#2563EB",
+      "accentColor": "#FDE047",
+      "emoji": "\u26a1",
+      "personality": "silly and energetic"
+    },
+    "pip": {
+      "id": "pip",
+      "name": "Pip",
+      "role": "guide",
+      "color": "#16A34A",
+      "accentColor": "#F9A8D4",
+      "emoji": "\ud83c\udf31",
+      "personality": "shy but smart"
+    },
+    "dr_lila_prism": {
+      "id": "dr_lila_prism",
+      "name": "Dr. Lila Prism",
+      "role": "expert",
+      "color": "#FF69B4",
+      "accentColor": "#FFD700",
+      "emoji": "\ud83d\udd2c",
+      "personality": "curious and loves playful laser tricks"
+    },
+    "prof_mateo_cloud": {
+      "id": "prof_mateo_cloud",
+      "name": "Prof. Mateo Cloud",
+      "role": "expert",
+      "color": "#00CED1",
+      "accentColor": "#8A2BE2",
+      "emoji": "\ud83d\udd2c",
+      "personality": "calm, storytelling about clouds and rain"
+    }
+  },
+  "acts": [
+    {
+      "act": 1,
+      "title": "The Question",
+      "scenes": [
+        {
+          "type": "dialogue",
+          "character": "nova",
+          "emotion": "excited",
+          "text": "Look, friends! A bright rainbow arches across the sky. How does that happen?",
+          "background": "clubhouse",
+          "charactersPresent": [
+            "nova",
+            "bolt",
+            "pip"
+          ]
+        },
+        {
+          "type": "dialogue",
+          "character": "bolt",
+          "emotion": "silly",
+          "text": "Maybe leprechauns are tossing gold paint across the clouds!"
+        },
+        {
+          "type": "dialogue",
+          "character": "pip",
+          "emotion": "shy",
+          "text": "I think it\u2019s something with light and water, like a hidden trick."
+        },
+        {
+          "type": "dialogue",
+          "character": "nova",
+          "emotion": "thinking",
+          "text": "But why does the light change when it meets water?"
+        },
+        {
+          "type": "dialogue",
+          "character": "bolt",
+          "emotion": "silly",
+          "text": "Maybe the sun uses a magic paintbrush that colors the sky!"
+        }
+      ]
+    },
+    {
+      "act": 2,
+      "title": "Expert 1 \u2013 Light\u2019s Journey",
+      "scenes": [
+        {
+          "type": "transition",
+          "destination": "science_lab",
+          "text": "Zooming through a glittery portal, the trio lands in Dr. Lila\u2019s bright science lab."
+        },
+        {
+          "type": "dialogue",
+          "character": "dr_lila_prism",
+          "emotion": "explaining",
+          "text": "Welcome! Let\u2019s watch a single water droplet split sunlight.",
+          "background": "science_lab",
+          "charactersPresent": [
+            "nova",
+            "bolt",
+            "pip",
+            "dr_lila_prism"
+          ]
+        },
+        {
+          "type": "explanation",
+          "character": "nova",
+          "emotion": "explaining",
+          "text": "I see the light bend as it enters the droplet\u2014just like a skateboard turning onto a soft carpet.",
+          "visual": "rainbow_formation_diagram"
+        },
+        {
+          "type": "explanation",
+          "character": "dr_lila_prism",
+          "emotion": "explaining",
+          "text": "That bend is called refraction. Light slows down when it moves from air into water, changing direction."
+        },
+        {
+          "type": "dialogue",
+          "character": "bolt",
+          "emotion": "silly",
+          "text": "Did the light turn into a tiny fish swimming inside the drop?"
+        },
+        {
+          "type": "explanation",
+          "character": "pip",
+          "emotion": "shy",
+          "text": "When light slows, its speed change also sets up dispersion later, so the colors can separate."
+        },
+        {
+          "type": "explanation",
+          "character": "dr_lila_prism",
+          "emotion": "explaining",
+          "text": "Now the light hits the back of the droplet and does a total internal reflection\u2014like a ball bouncing off the inside of a marble."
+        },
+        {
+          "type": "dialogue",
+          "character": "bolt",
+          "emotion": "silly",
+          "text": "Whoa! It\u2019s doing a superhero flip before it pops out!"
+        },
+        {
+          "type": "quiz",
+          "question": "What happens to light when it first enters a water droplet?",
+          "options": [
+            {
+              "text": "It speeds up and goes straight.",
+              "correct": false,
+              "response": "Almost! Light actually slows down a bit, which makes it bend."
+            },
+            {
+              "text": "It slows down and bends.",
+              "correct": true,
+              "response": "Exactly! The slowdown causes the light to change direction\u2014this is refraction."
+            },
+            {
+              "text": "It disappears for a moment.",
+              "correct": false,
+              "response": "Not quite\u2014light stays there, just a little slower and at a new angle."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "act": 3,
+      "title": "Expert 2 \u2013 Droplets and Dispersion",
+      "scenes": [
+        {
+          "type": "transition",
+          "destination": "rainforest",
+          "text": "A misty breeze carries them to Prof. Mateo\u2019s lush rainforest lab."
+        },
+        {
+          "type": "dialogue",
+          "character": "prof_mateo_cloud",
+          "emotion": "explaining",
+          "text": "Here, tiny droplets act like a candy sorter, spreading colors just like a prism.",
+          "background": "rainforest",
+          "charactersPresent": [
+            "nova",
+            "bolt",
+            "pip",
+            "prof_mateo_cloud"
+          ]
+        },
+        {
+          "type": "explanation",
+          "character": "pip",
+          "emotion": "shy",
+          "text": "Dispersion follows the earlier refraction\u2014different wavelengths slow by different amounts, so they part ways."
+        },
+        {
+          "type": "explanation",
+          "character": "prof_mateo_cloud",
+          "emotion": "explaining",
+          "text": "Each droplet sends its colored ray toward you at about 40\u2011to\u201142 degrees, forming a cone that we see as an arc."
+        },
+        {
+          "type": "dialogue",
+          "character": "bolt",
+          "emotion": "silly",
+          "text": "So the sky is painting with a giant brush made of water!"
+        },
+        {
+          "type": "explanation",
+          "character": "prof_mateo_cloud",
+          "emotion": "explaining",
+          "text": "But why is red on the top? Red bends the least, so its path stays higher in the cone."
+        },
+        {
+          "type": "dialogue",
+          "character": "nova",
+          "emotion": "thinking",
+          "text": "But why does the arc look like a smile and not a full circle?"
+        },
+        {
+          "type": "explanation",
+          "character": "prof_mateo_cloud",
+          "emotion": "explaining",
+          "text": "From the ground we only see the top slice of the light cone; the rest is hidden behind the horizon."
+        },
+        {
+          "type": "quiz",
+          "question": "Why does a rainbow appear as an arc instead of a full circle in most places?",
+          "options": [
+            {
+              "text": "Because the Earth is round.",
+              "correct": false,
+              "response": "Good guess, but the shape comes from how each droplet sends light."
+            },
+            {
+              "text": "Because each droplet sends light toward you at a specific angle.",
+              "correct": true,
+              "response": "Right! The 40\u2011to\u201142 degree angle creates a cone of light that looks like an arc from the ground."
+            },
+            {
+              "text": "Because the Sun is a rainbow in disguise.",
+              "correct": false,
+              "response": "Fun idea! The Sun provides the white light, but the droplet angles shape the arc."
+            }
+          ]
+        },
+        {
+          "type": "quiz",
+          "question": "Why is red always on the top of a rainbow?",
+          "options": [
+            {
+              "text": "Red light bends the least, so it appears higher.",
+              "correct": true,
+              "response": "Correct! Red\u2019s longer wavelength bends the smallest amount, placing it at the top."
+            },
+            {
+              "text": "Red light bends the most, so it climbs to the top.",
+              "correct": false,
+              "response": "Close, but actually the opposite\u2014red bends the least."
+            },
+            {
+              "text": "Red is the brightest, so it pushes the other colors down.",
+              "correct": false,
+              "response": "Brightness helps us see it, but the order is set by how much each color bends."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "act": 4,
+      "title": "The Observation",
+      "scenes": [
+        {
+          "type": "transition",
+          "destination": "weather_station",
+          "text": "A shimmering beam carries them to a high\u2011up weather station where a full\u2011circle rainbow is projected."
+        },
+        {
+          "type": "dialogue",
+          "character": "nova",
+          "emotion": "excited",
+          "text": "Wow! Look at the whole circle\u2014every droplet around us is sending its colors!",
+          "background": "weather_station",
+          "charactersPresent": [
+            "nova",
+            "bolt",
+            "pip"
+          ]
+        },
+        {
+          "type": "explanation",
+          "character": "pip",
+          "emotion": "explaining",
+          "text": "This chart shows how shorter wavelengths like blue bend more than red, creating that neat spread.",
+          "visual": "dispersion_chart"
+        },
+        {
+          "type": "dialogue",
+          "character": "bolt",
+          "emotion": "silly",
+          "text": "I guess the sky just gave the rainbow a giant smile!"
+        },
+        {
+          "type": "dialogue",
+          "character": "nova",
+          "emotion": "happy",
+          "text": "Putting refraction, internal reflection, and dispersion together makes nature\u2019s own light show."
+        }
+      ]
+    },
+    {
+      "act": 5,
+      "title": "The Answer",
+      "scenes": [
+        {
+          "type": "transition",
+          "destination": "clubhouse",
+          "text": "Back home, the friends gather under a cozy tree."
+        },
+        {
+          "type": "dialogue",
+          "character": "nova",
+          "emotion": "explaining",
+          "text": "Rainbows appear when sunlight enters round water droplets, bends (refraction), bounces inside (internal reflection), bends again, and spreads into a spectrum of colors."
+        },
+        {
+          "type": "explanation",
+          "character": "pip",
+          "emotion": "shy",
+          "text": "The amount each color bends follows Snell\u2019s Law, and because blue bends more than red, the colors fan out in the familiar order."
+        },
+        {
+          "type": "dialogue",
+          "character": "bolt",
+          "emotion": "happy",
+          "text": "And no leprechauns were needed\u2014just physics and a splash of water!"
+        },
+        {
+          "type": "celebration",
+          "text": "The trio high\u2011five, the squirrel claps, and a rainbow of confetti fills the air."
+        }
+      ]
+    }
+  ],
+  "key_visuals": [
+    {
+      "id": "rainbow_formation_diagram",
+      "description": "Cross\u2011section of a spherical droplet showing the path of a light ray: first refraction, internal reflection, second refraction, and the spread of colors as they exit.",
+      "type": "diagram"
+    },
+    {
+      "id": "dispersion_chart",
+      "description": "A chart comparing wavelength, speed in water, and bending angle for red through violet, illustrating dispersion.",
+      "type": "diagram"
+    }
+  ],
+  "voice_map": {
+    "nova": "tara",
+    "bolt": "austin",
+    "pip": "leah",
+    "dr_lila_prism": "troy",
+    "prof_mateo_cloud": "hannah"
+  }
+}

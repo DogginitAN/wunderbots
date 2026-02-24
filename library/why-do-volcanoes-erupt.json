@@ -1,0 +1,406 @@
+{
+  "episode_id": "volcano_eruption_01",
+  "question": "Why do volcanoes erupt?",
+  "answer_summary": "Volcanoes erupt when gas\u2011filled magma builds pressure until it bursts through the Earth\u2019s surface.",
+  "answer_detailed": "Magma deep underground holds dissolved volatile gases. As magma rises, the lower pressure makes those gases exsolve, rapidly raising pressure until the surrounding rock gives way, causing an eruption.",
+  "characters": {
+    "nova": {
+      "id": "nova",
+      "name": "Nova",
+      "role": "guide",
+      "color": "#7C3AED",
+      "accentColor": "#FCD34D",
+      "emoji": "\u2b50",
+      "personality": "curious and brave"
+    },
+    "bolt": {
+      "id": "bolt",
+      "name": "Bolt",
+      "role": "guide",
+      "color": "#2563EB",
+      "accentColor": "#FDE047",
+      "emoji": "\u26a1",
+      "personality": "silly and energetic"
+    },
+    "pip": {
+      "id": "pip",
+      "name": "Pip",
+      "role": "guide",
+      "color": "#16A34A",
+      "accentColor": "#F9A8D4",
+      "emoji": "\ud83c\udf31",
+      "personality": "shy but smart"
+    },
+    "dr_terra_rockwell": {
+      "id": "dr_terra_rockwell",
+      "name": "Dr. Terra Rockwell",
+      "role": "expert",
+      "color": "#A0522D",
+      "accentColor": "#FFD700",
+      "emoji": "\ud83d\udd2c",
+      "personality": "enthusiastic explorer who loves field samples"
+    },
+    "prof_maya_sparks": {
+      "id": "prof_maya_sparks",
+      "name": "Prof. Maya Sparks",
+      "role": "expert",
+      "color": "#FF69B4",
+      "accentColor": "#00CED1",
+      "emoji": "\ud83d\udd2c",
+      "personality": "quirky gadget lover who explains big ideas with cool models"
+    }
+  },
+  "acts": [
+    {
+      "act": 1,
+      "title": "The Question",
+      "scenes": [
+        {
+          "type": "dialogue",
+          "character": "nova",
+          "emotion": "excited",
+          "text": "Hey team, I just saw a video of a volcano blowing smoke\u2014why do volcanoes erupt?",
+          "background": "clubhouse",
+          "charactersPresent": [
+            "nova",
+            "bolt",
+            "pip"
+          ]
+        },
+        {
+          "type": "dialogue",
+          "character": "bolt",
+          "emotion": "silly",
+          "text": "Maybe volcanoes are just giant birthday candles that forgot to blow out!"
+        },
+        {
+          "type": "dialogue",
+          "character": "pip",
+          "emotion": "shy",
+          "text": "It\u2019s kind of like a shaken soda bottle\u2014bubbles want to escape when you pop the cap."
+        },
+        {
+          "type": "dialogue",
+          "character": "nova",
+          "emotion": "thinking",
+          "text": "But WHY do those bubbles get so powerful inside the Earth?"
+        },
+        {
+          "type": "dialogue",
+          "character": "bolt",
+          "emotion": "silly",
+          "text": "Or maybe the Earth is a giant popcorn machine and the eruptions are popcorn popping!"
+        },
+        {
+          "type": "dialogue",
+          "character": "nova",
+          "emotion": "excited",
+          "text": "Let\u2019s zip to a real volcano and find out!"
+        },
+        {
+          "type": "transition",
+          "destination": "volcano_view",
+          "text": "Our rockets whoosh through fluffy clouds and land on a smoky mountain."
+        }
+      ]
+    },
+    {
+      "act": 2,
+      "title": "Expert 1 \u2013 Dr. Terra",
+      "scenes": [
+        {
+          "type": "dialogue",
+          "character": "nova",
+          "emotion": "excited",
+          "text": "Wow, the air smells like cinnamon! Who\u2019s our volcano guide?",
+          "background": "volcano_view",
+          "charactersPresent": [
+            "nova",
+            "bolt",
+            "pip",
+            "dr_terra_rockwell"
+          ]
+        },
+        {
+          "type": "dialogue",
+          "character": "dr_terra_rockwell",
+          "emotion": "excited",
+          "text": "I\u2019m Dr. Terra, and this tiny lava lamp shows the hidden magma beneath us."
+        },
+        {
+          "type": "explanation",
+          "character": "pip",
+          "emotion": "explaining",
+          "text": "When magma is deep, it holds dissolved gases\u2014like fizz in a soda. As it climbs, the pressure drops and the gases exsolve, swelling the magma chamber.",
+          "visual": "magma_pressure_diagram"
+        },
+        {
+          "type": "dialogue",
+          "character": "bolt",
+          "emotion": "silly",
+          "text": "So the lava lamp is actually a magic lamp that grants wishes when the gas pops out?"
+        },
+        {
+          "type": "dialogue",
+          "character": "nova",
+          "emotion": "thinking",
+          "text": "But WHY does the pressure suddenly jump as the magma rises?"
+        },
+        {
+          "type": "explanation",
+          "character": "dr_terra_rockwell",
+          "emotion": "explaining",
+          "text": "Because the dissolved volatiles turn into bubbles\u2014a process called exsolution. The bubbles expand quickly, and the chamber can reach 200\u202fMPa, about 2,000 times a car tire\u2019s pressure!"
+        },
+        {
+          "type": "quiz",
+          "question": "What makes magma want to burst out of the Earth?",
+          "options": [
+            {
+              "text": "The gas bubbles inside act like fizz in a shaken soda bottle.",
+              "correct": true,
+              "response": "Exactly! Those gas bubbles expand and push the magma up, just like soda fizz."
+            },
+            {
+              "text": "The Earth gets sleepy and opens a nap\u2011time crack.",
+              "correct": false,
+              "response": "Not quite\u2014it's the pressure from gas, not a nap, that drives eruptions."
+            },
+            {
+              "text": "Magma likes to dance and jumps out for a party.",
+              "correct": false,
+              "response": "Fun idea! The real reason is pressure, not a dance party."
+            }
+          ]
+        },
+        {
+          "type": "transition",
+          "destination": "science_lab",
+          "text": "Our rockets zip across a rainbow bridge to a high\u2011tech lab."
+        },
+        {
+          "type": "dialogue",
+          "character": "bolt",
+          "emotion": "excited",
+          "text": "I hope the lab has a giant chocolate volcano!"
+        }
+      ]
+    },
+    {
+      "act": 3,
+      "title": "Expert 2 \u2013 Prof. Maya",
+      "scenes": [
+        {
+          "type": "dialogue",
+          "character": "nova",
+          "emotion": "excited",
+          "text": "We\u2019ve arrived at the science lab. Who\u2019s ready to show us the moving Earth?",
+          "background": "science_lab",
+          "charactersPresent": [
+            "nova",
+            "bolt",
+            "pip",
+            "prof_maya_sparks"
+          ]
+        },
+        {
+          "type": "dialogue",
+          "character": "prof_maya_sparks",
+          "emotion": "excited",
+          "text": "I\u2019m Prof. Maya! Let\u2019s snap this 3\u2011D plate puzzle and see how Earth\u2019s pieces create volcano pathways."
+        },
+        {
+          "type": "explanation",
+          "character": "pip",
+          "emotion": "explaining",
+          "text": "When plates pull apart at a divergent boundary or dive beneath each other at a subduction zone, they open doors\u2014cracks or melt zones\u2014through which magma can rise.",
+          "visual": "plate_boundary_cross_section"
+        },
+        {
+          "type": "dialogue",
+          "character": "bolt",
+          "emotion": "silly",
+          "text": "So the plates are giant LEGO bricks that click together and sometimes pop off a surprise piece!"
+        },
+        {
+          "type": "dialogue",
+          "character": "nova",
+          "emotion": "thinking",
+          "text": "But HOW does that movement actually melt rock into magma?"
+        },
+        {
+          "type": "explanation",
+          "character": "prof_maya_sparks",
+          "emotion": "explaining",
+          "text": "Mantle convection drags hot rock upward. When plates converge, the sinking slab melts, forming magma chambers that feed volcanoes."
+        },
+        {
+          "type": "quiz",
+          "question": "How do moving tectonic plates help volcanoes erupt?",
+          "options": [
+            {
+              "text": "They create cracks or melt zones that act like doors for magma to rise.",
+              "correct": true,
+              "response": "Right! Plate motion opens pathways, letting magma travel upward."
+            },
+            {
+              "text": "They push the Earth\u2019s surface down like a giant blanket.",
+              "correct": false,
+              "response": "Close, but it\u2019s the opening of cracks or melting that matters, not just pushing down."
+            },
+            {
+              "text": "They sprinkle magic dust that makes rocks melt.",
+              "correct": false,
+              "response": "Nice imagination! The real magic is heat from mantle convection, not dust."
+            }
+          ]
+        },
+        {
+          "type": "transition",
+          "destination": "volcano_view",
+          "text": "Back to the smoky mountain\u2014we\u2019ll see the eruption in action!"
+        },
+        {
+          "type": "dialogue",
+          "character": "pip",
+          "emotion": "happy",
+          "text": "I can\u2019t wait to watch the pressure and plate ideas come together."
+        }
+      ]
+    },
+    {
+      "act": 4,
+      "title": "The Observation",
+      "scenes": [
+        {
+          "type": "dialogue",
+          "character": "nova",
+          "emotion": "excited",
+          "text": "Look! A simulation shows magma pushing up, then\u2014boom! A fiery eruption!",
+          "background": "volcano_view",
+          "charactersPresent": [
+            "nova",
+            "bolt",
+            "pip",
+            "dr_terra_rockwell"
+          ]
+        },
+        {
+          "type": "explanation",
+          "character": "dr_terra_rockwell",
+          "emotion": "explaining",
+          "text": "When the gas\u2011rich magma bursts, it creates an explosive eruption. If the magma is thin and low\u2011gas, it flows gently like honey.",
+          "visual": "eruption_style_chart"
+        },
+        {
+          "type": "dialogue",
+          "character": "bolt",
+          "emotion": "silly",
+          "text": "It\u2019s like a birthday cake that just sprayed frosting everywhere!"
+        },
+        {
+          "type": "dialogue",
+          "character": "pip",
+          "emotion": "happy",
+          "text": "So the soda\u2011bottle pressure, the plate\u2011door pathways, and the honey\u2011vs\u2011balloon magma all decide if a volcano sings or shouts."
+        },
+        {
+          "type": "quiz",
+          "question": "Why do some eruptions flow gently while others explode violently?",
+          "options": [
+            {
+              "text": "Because thick, sticky magma drips like honey, while bubbly magma bursts like a popped balloon.",
+              "correct": true,
+              "response": "Exactly! Viscosity and gas content decide if the lava streams or blasts."
+            },
+            {
+              "text": "Because the volcano decides its mood each day.",
+              "correct": false,
+              "response": "Volcanoes don\u2019t have moods; the magma\u2019s properties control the style."
+            },
+            {
+              "text": "Because the wind blows the magma in different directions.",
+              "correct": false,
+              "response": "Wind affects ash clouds, but the eruption style comes from the magma itself."
+            }
+          ]
+        },
+        {
+          "type": "dialogue",
+          "character": "nova",
+          "emotion": "explaining",
+          "text": "We\u2019ve seen pressure, plates, and magma thickness all work together to make a volcano erupt."
+        }
+      ]
+    },
+    {
+      "act": 5,
+      "title": "The Answer",
+      "scenes": [
+        {
+          "type": "transition",
+          "destination": "clubhouse",
+          "text": "Our rockets glide back home, carrying fresh volcano knowledge."
+        },
+        {
+          "type": "dialogue",
+          "character": "nova",
+          "emotion": "explaining",
+          "text": "So, volcanoes erupt when gas\u2011filled magma builds enough pressure to break through the rock above."
+        },
+        {
+          "type": "dialogue",
+          "character": "pip",
+          "emotion": "shy",
+          "text": "The magma\u2019s volatile gases exsolve as pressure drops, tectonic plates open pathways, and the magma\u2019s viscosity decides whether the eruption is gentle or explosive."
+        },
+        {
+          "type": "dialogue",
+          "character": "bolt",
+          "emotion": "happy",
+          "text": "In short, it\u2019s not a birthday candle or popcorn\u2014 it\u2019s Earth\u2019s own fizzy, moving, gooey fireworks!"
+        },
+        {
+          "type": "dialogue",
+          "character": "nova",
+          "emotion": "thinking",
+          "text": "And that\u2019s why we call them the planet\u2019s spectacular pressure\u2011release parties."
+        },
+        {
+          "type": "celebration",
+          "text": "The trio throws a confetti\u2011filled, glitter\u2011lava party, cheering, \u201cScience rocks!\u201d"
+        },
+        {
+          "type": "dialogue",
+          "character": "nova",
+          "emotion": "excited",
+          "text": "Thanks for exploring with us\u2014keep asking \u2018why\u2019 and the world will keep bubbling with answers!"
+        }
+      ]
+    }
+  ],
+  "key_visuals": [
+    {
+      "id": "magma_pressure_diagram",
+      "description": "Cross\u2011section showing a magma chamber with expanding gas bubbles pushing against rock.",
+      "type": "diagram"
+    },
+    {
+      "id": "plate_boundary_cross_section",
+      "description": "Side view of a subduction zone and a divergent ridge, highlighting where magma forms.",
+      "type": "diagram"
+    },
+    {
+      "id": "eruption_style_chart",
+      "description": "Side\u2011by\u2011side comparison of effusive lava flow versus explosive pyroclastic blast, with viscosity and gas icons.",
+      "type": "diagram"
+    }
+  ],
+  "voice_map": {
+    "nova": "tara",
+    "bolt": "austin",
+    "pip": "leah",
+    "dr_terra_rockwell": "troy",
+    "prof_maya_sparks": "hannah"
+  }
+}

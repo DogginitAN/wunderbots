@@ -1,0 +1,427 @@
+{
+  "episode_id": "dreams_001",
+  "question": "Why do we dream?",
+  "answer_summary": "We dream during REM sleep, where the brain sorts memories, balances emotions, and rehearses future situations.",
+  "answer_detailed": "In REM sleep the brain\u2019s cortex becomes highly active while the body is paralyzed. This stage replays recent experiences, strengthens neural connections, and lets the amygdala practice emotional regulation.",
+  "characters": {
+    "nova": {
+      "id": "nova",
+      "name": "Nova",
+      "role": "guide",
+      "color": "#7C3AED",
+      "accentColor": "#FCD34D",
+      "emoji": "\u2b50",
+      "personality": "curious and brave"
+    },
+    "bolt": {
+      "id": "bolt",
+      "name": "Bolt",
+      "role": "guide",
+      "color": "#2563EB",
+      "accentColor": "#FDE047",
+      "emoji": "\u26a1",
+      "personality": "silly and energetic"
+    },
+    "pip": {
+      "id": "pip",
+      "name": "Pip",
+      "role": "guide",
+      "color": "#16A34A",
+      "accentColor": "#F9A8D4",
+      "emoji": "\ud83c\udf31",
+      "personality": "shy but smart"
+    },
+    "dr_nightwatch": {
+      "id": "dr_nightwatch",
+      "name": "Dr. Luna Nightwatch",
+      "role": "expert",
+      "color": "#6B21A8",
+      "accentColor": "#A78BFA",
+      "emoji": "\ud83d\udd2c",
+      "personality": "curious and methodical"
+    },
+    "prof_moonbeam": {
+      "id": "prof_moonbeam",
+      "name": "Prof. Maya Moonbeam",
+      "role": "expert",
+      "color": "#0EA5E9",
+      "accentColor": "#7DD3FC",
+      "emoji": "\ud83d\udd2c",
+      "personality": "empathetic and storytelling"
+    }
+  },
+  "acts": [
+    {
+      "act": 1,
+      "title": "The Question",
+      "scenes": [
+        {
+          "type": "dialogue",
+          "character": "nova",
+          "emotion": "excited",
+          "text": "Hey friends, have you ever wondered why we have those amazing adventures while we\u2019re asleep?",
+          "background": "clubhouse",
+          "charactersPresent": [
+            "nova",
+            "bolt",
+            "pip"
+          ]
+        },
+        {
+          "type": "dialogue",
+          "character": "bolt",
+          "emotion": "silly",
+          "text": "Maybe our brains are sneaking a pizza party when the lights go out!"
+        },
+        {
+          "type": "dialogue",
+          "character": "pip",
+          "emotion": "shy",
+          "text": "The night sky looks like a big, quiet storybook\u2026 maybe dreams are the pages turning."
+        },
+        {
+          "type": "dialogue",
+          "character": "nova",
+          "emotion": "thinking",
+          "text": "But WHY does our mind create pictures and sounds while we\u2019re sleeping?"
+        },
+        {
+          "type": "dialogue",
+          "character": "bolt",
+          "emotion": "silly",
+          "text": "I think dreams are secret messages from our pet cats trying to tell us where they hid the treats."
+        },
+        {
+          "type": "transition",
+          "destination": "science_lab",
+          "text": "Zooming through a glittery tunnel, the trio lands in a buzzing lab full of flashing screens."
+        }
+      ]
+    },
+    {
+      "act": 2,
+      "title": "Expert 1 \u2013 Dr. Nightwatch",
+      "scenes": [
+        {
+          "type": "dialogue",
+          "character": "dr_nightwatch",
+          "emotion": "explaining",
+          "text": "Welcome, dream explorers! I\u2019m Dr. Luna Nightwatch, and I study how the brain lights up when you snooze.",
+          "background": "science_lab",
+          "charactersPresent": [
+            "nova",
+            "bolt",
+            "pip",
+            "dr_nightwatch"
+          ]
+        },
+        {
+          "type": "dialogue",
+          "character": "nova",
+          "emotion": "thinking",
+          "text": "Can you show us the dream carousel you mentioned?"
+        },
+        {
+          "type": "explanation",
+          "character": "dr_nightwatch",
+          "emotion": "explaining",
+          "text": "Sure! Your brain rides a sleep carousel. The fastest spin, called REM, is when vivid dreams appear. Here\u2019s a diagram of the sleep cycle.",
+          "visual": "sleep_cycle_diagram"
+        },
+        {
+          "type": "dialogue",
+          "character": "nova",
+          "emotion": "thinking",
+          "text": "but WHY does the brain need different stages instead of just one long nap?"
+        },
+        {
+          "type": "explanation",
+          "character": "bolt",
+          "emotion": "silly",
+          "text": "Maybe each stage is a different ice\u2011cream flavor\u2014chocolate for deep sleep, strawberry for REM!"
+        },
+        {
+          "type": "explanation",
+          "character": "pip",
+          "emotion": "shy",
+          "text": "When the REM carousel spins, it\u2019s also the time the brain starts sorting memories, like a librarian on a fast ride."
+        },
+        {
+          "type": "explanation",
+          "character": "dr_nightwatch",
+          "emotion": "explaining",
+          "text": "During REM the cortex lights up like it\u2019s awake, but the body gets muscle atonia so we don\u2019t act out the dreams."
+        },
+        {
+          "type": "quiz",
+          "question": "What part of sleep is most linked to vivid dreaming?",
+          "options": [
+            {
+              "text": "Rapid Eye Movement (REM) sleep",
+              "correct": true,
+              "response": "Exactly! REM is the high\u2011energy stage where the brain creates the most vivid dreams."
+            },
+            {
+              "text": "Deep ocean sleep",
+              "correct": false,
+              "response": "Nice try! While deep sleep is important, it\u2019s the REM stage that lights up the dream screen."
+            },
+            {
+              "text": "Snack\u2011time nap",
+              "correct": false,
+              "response": "That would be tasty, but dreams aren\u2019t powered by snacks\u2014think about the brain\u2019s activity patterns."
+            }
+          ]
+        },
+        {
+          "type": "dialogue",
+          "character": "nova",
+          "emotion": "excited",
+          "text": "Got it! REM is the dream\u2011factory stage."
+        },
+        {
+          "type": "explanation",
+          "character": "bolt",
+          "emotion": "silly",
+          "text": "I bet the brain watches cartoon marathons during REM\u2014popcorn for neurons!"
+        },
+        {
+          "type": "transition",
+          "destination": "hospital",
+          "text": "A friendly hover\u2011car whizzes them to a bright hospital wing where a new expert waits."
+        }
+      ]
+    },
+    {
+      "act": 3,
+      "title": "Expert 2 \u2013 Prof. Moonbeam",
+      "scenes": [
+        {
+          "type": "dialogue",
+          "character": "prof_moonbeam",
+          "emotion": "explaining",
+          "text": "Hello, dream detectives! I\u2019m Prof. Maya Moonbeam, and I study how dreams help our feelings and memories.",
+          "background": "hospital",
+          "charactersPresent": [
+            "nova",
+            "bolt",
+            "pip",
+            "prof_moonbeam"
+          ]
+        },
+        {
+          "type": "dialogue",
+          "character": "nova",
+          "emotion": "thinking",
+          "text": "How does dreaming help our memory, exactly?"
+        },
+        {
+          "type": "explanation",
+          "character": "prof_moonbeam",
+          "emotion": "explaining",
+          "text": "During REM, the hippocampus replays recent experiences, sending them to the neocortex\u2014like a librarian moving books to the right shelves.",
+          "visual": "memory_consolidation_map"
+        },
+        {
+          "type": "dialogue",
+          "character": "pip",
+          "emotion": "shy",
+          "text": "So the brain\u2019s memory shelves and its emotional rehearsal stage happen together, like a storybook that both stores and acts out scenes."
+        },
+        {
+          "type": "dialogue",
+          "character": "nova",
+          "emotion": "thinking",
+          "text": "but WHY does the brain replay memories while we dream?"
+        },
+        {
+          "type": "explanation",
+          "character": "bolt",
+          "emotion": "silly",
+          "text": "Maybe it\u2019s playing a matching\u2011cards video game\u2014\u2018Find the pair of today\u2019s adventure!\u2019"
+        },
+        {
+          "type": "explanation",
+          "character": "prof_moonbeam",
+          "emotion": "explaining",
+          "text": "Dreams also let the amygdala stay active, so emotions get a safe rehearsal space\u2014like a video game where you practice bravery.",
+          "visual": "emotional_simulation_scene"
+        },
+        {
+          "type": "dialogue",
+          "character": "nova",
+          "emotion": "excited",
+          "text": "but WHY does the amygdala stay active when the rest of the brain is sleeping?"
+        },
+        {
+          "type": "quiz",
+          "question": "How do dreams help our memories?",
+          "options": [
+            {
+              "text": "They replay and sort recent experiences, strengthening connections.",
+              "correct": true,
+              "response": "Spot on! Dream time is like a librarian organizing books so we can recall them later."
+            },
+            {
+              "text": "They erase all the old memories so we start fresh.",
+              "correct": false,
+              "response": "Almost! Dreams don\u2019t delete memories, they actually help keep the important ones."
+            },
+            {
+              "text": "They turn memories into cartoon characters that dance.",
+              "correct": false,
+              "response": "That would be fun! While dreams can be playful, their main job is to tidy up memory pathways."
+            }
+          ]
+        },
+        {
+          "type": "dialogue",
+          "character": "nova",
+          "emotion": "happy",
+          "text": "I see! Dreaming is a memory\u2011tidying party."
+        },
+        {
+          "type": "dialogue",
+          "character": "bolt",
+          "emotion": "silly",
+          "text": "And sometimes the brain makes those memories wear dancing shoes!"
+        },
+        {
+          "type": "quiz",
+          "question": "Why might the brain run a \u2018simulation\u2019 in a dream?",
+          "options": [
+            {
+              "text": "To practice responses to emotions and future situations.",
+              "correct": true,
+              "response": "Yes! Dream simulations let us rehearse feelings and choices, like a secret practice arena."
+            },
+            {
+              "text": "To test how fast we can run in a race while asleep.",
+              "correct": false,
+              "response": "Good imagination! Dreams aren\u2019t about sprinting, they\u2019re more about mental rehearsal."
+            },
+            {
+              "text": "To fill up the night with random pictures for fun.",
+              "correct": false,
+              "response": "Dreams are creative, but they also serve a purpose beyond just random pictures."
+            }
+          ]
+        },
+        {
+          "type": "transition",
+          "destination": "clubhouse",
+          "text": "The team zips back home, their heads buzzing with new dream knowledge."
+        }
+      ]
+    },
+    {
+      "act": 4,
+      "title": "The Observation",
+      "scenes": [
+        {
+          "type": "dialogue",
+          "character": "nova",
+          "emotion": "excited",
+          "text": "Back at the clubhouse, let\u2019s see dreaming in action!",
+          "background": "clubhouse",
+          "charactersPresent": [
+            "nova",
+            "bolt",
+            "pip"
+          ]
+        },
+        {
+          "type": "explanation",
+          "character": "pip",
+          "emotion": "thinking",
+          "text": "When we close our eyes, the brain\u2019s REM carousel starts turning, sorting memories and rehearsing feelings\u2014just like we learned."
+        },
+        {
+          "type": "dialogue",
+          "character": "bolt",
+          "emotion": "silly",
+          "text": "I bet my dreams will be filled with flying pancakes that sing the alphabet!"
+        },
+        {
+          "type": "explanation",
+          "character": "nova",
+          "emotion": "explaining",
+          "text": "So the answer is: REM sleep is the night workshop where the brain organizes memories, balances emotions, and runs practice simulations."
+        },
+        {
+          "type": "explanation",
+          "character": "pip",
+          "emotion": "thinking",
+          "text": "Look! Whiskers twitch on our sleepy cat\u2014tiny eye movements show the brain is in REM, just like our diagrams."
+        },
+        {
+          "type": "celebration",
+          "text": "The friends cheer, their minds sparkling with the wonder of dreaming."
+        }
+      ]
+    },
+    {
+      "act": 5,
+      "title": "The Answer",
+      "scenes": [
+        {
+          "type": "dialogue",
+          "character": "nova",
+          "emotion": "excited",
+          "text": "We\u2019ve solved the mystery: we dream because REM sleep helps us sort memories, process feelings, and rehearse tomorrow\u2019s adventures."
+        },
+        {
+          "type": "explanation",
+          "character": "pip",
+          "emotion": "shy",
+          "text": "During REM, sharp\u2011wave ripples replay experiences, synaptic plasticity strengthens connections, and the amygdala stays active for emotional regulation."
+        },
+        {
+          "type": "dialogue",
+          "character": "bolt",
+          "emotion": "happy",
+          "text": "Tonight I\u2019ll try to remember my flying pancake dream and see what my brain is practicing!"
+        },
+        {
+          "type": "explanation",
+          "character": "nova",
+          "emotion": "explaining",
+          "text": "That\u2019s the power of dreaming\u2014our brain\u2019s nightly theater keeps us learning, feeling, and staying healthy."
+        },
+        {
+          "type": "celebration",
+          "text": "Dreams are the brain\u2019s secret night workshop, and every sleeper is invited to the show."
+        },
+        {
+          "type": "transition",
+          "destination": "clubhouse",
+          "text": "With sleepy smiles, the trio settles into the clubhouse, ready for the next big question."
+        }
+      ]
+    }
+  ],
+  "key_visuals": [
+    {
+      "id": "sleep_cycle_diagram",
+      "description": "A circular chart showing the progression through N1, N2, N3, and REM, with colors indicating brain activity levels.",
+      "type": "diagram"
+    },
+    {
+      "id": "memory_consolidation_map",
+      "description": "Illustration of the hippocampus sending replayed memory 'threads' to the neocortex, depicted as a train moving from a station to shelves.",
+      "type": "diagram"
+    },
+    {
+      "id": "emotional_simulation_scene",
+      "description": "A split\u2011screen comic\u2011style sketch showing a child facing a scary monster in a dream and then practicing calm breathing, labeled with amygdala and prefrontal cortex activity.",
+      "type": "diagram"
+    }
+  ],
+  "voice_map": {
+    "nova": "tara",
+    "bolt": "austin",
+    "pip": "leah",
+    "dr_nightwatch": "troy",
+    "prof_moonbeam": "hannah"
+  }
+}

@@ -1,0 +1,430 @@
+{
+  "episode_id": "sky_blue_001",
+  "question": "Why is the sky blue?",
+  "answer_summary": "Tiny air molecules scatter blue sunlight more than other colors, making the sky appear blue.",
+  "answer_detailed": "Sunlight, a mixture of many wavelengths called the visible spectrum, enters Earth's atmosphere where Rayleigh scattering by tiny molecules preferentially redirects shorter\u2011wavelength blue light in all directions. At sunrise and sunset the longer path through the air removes most blue, leaving reds and oranges.",
+  "characters": {
+    "nova": {
+      "id": "nova",
+      "name": "Nova",
+      "role": "guide",
+      "color": "#7C3AED",
+      "accentColor": "#FCD34D",
+      "emoji": "\u2b50",
+      "personality": "curious and brave"
+    },
+    "bolt": {
+      "id": "bolt",
+      "name": "Bolt",
+      "role": "guide",
+      "color": "#2563EB",
+      "accentColor": "#FDE047",
+      "emoji": "\u26a1",
+      "personality": "silly and energetic"
+    },
+    "pip": {
+      "id": "pip",
+      "name": "Pip",
+      "role": "guide",
+      "color": "#16A34A",
+      "accentColor": "#F9A8D4",
+      "emoji": "\ud83c\udf31",
+      "personality": "shy but smart"
+    },
+    "dr_aurora": {
+      "id": "dr_aurora",
+      "name": "Dr. Aurora Skywatcher",
+      "role": "expert",
+      "color": "#FF8C00",
+      "accentColor": "#FFD700",
+      "emoji": "\ud83d\udd2c",
+      "personality": "inquisitive and poetic"
+    },
+    "prof_indigo": {
+      "id": "prof_indigo",
+      "name": "Prof. Indigo Wave",
+      "role": "expert",
+      "color": "#4B0082",
+      "accentColor": "#9370DB",
+      "emoji": "\ud83d\udd2c",
+      "personality": "playful and hands\u2011on"
+    }
+  },
+  "acts": [
+    {
+      "act": 1,
+      "title": "The Question",
+      "scenes": [
+        {
+          "type": "dialogue",
+          "character": "nova",
+          "emotion": "excited",
+          "text": "Hey friends! Have you ever wondered why the sky is blue?",
+          "background": "clubhouse",
+          "charactersPresent": [
+            "nova",
+            "bolt",
+            "pip"
+          ]
+        },
+        {
+          "type": "dialogue",
+          "character": "bolt",
+          "emotion": "silly",
+          "text": "Maybe the sky is painted by a giant blue paintbrush that never runs out!"
+        },
+        {
+          "type": "dialogue",
+          "character": "pip",
+          "emotion": "shy",
+          "text": "I once saw a rainbow in a glass of water\u2014maybe the sky is just a giant rainbow."
+        },
+        {
+          "type": "dialogue",
+          "character": "nova",
+          "emotion": "thinking",
+          "text": "But why does the sky stay blue all day, even when the Sun moves?"
+        },
+        {
+          "type": "dialogue",
+          "character": "bolt",
+          "emotion": "silly",
+          "text": "Could it be that the Sun wears blue sunglasses that spill color everywhere?"
+        },
+        {
+          "type": "transition",
+          "destination": "observatory",
+          "text": "The trio hops onto a sky\u2011shaped scooter and zooms to the mountain observatory."
+        }
+      ]
+    },
+    {
+      "act": 2,
+      "title": "Expert 1 \u2013 Dr. Aurora",
+      "scenes": [
+        {
+          "type": "dialogue",
+          "character": "dr_aurora",
+          "emotion": "explaining",
+          "text": "Welcome, bright minds! Let\u2019s peek at sunlight with this prism.",
+          "background": "observatory",
+          "charactersPresent": [
+            "nova",
+            "bolt",
+            "pip",
+            "dr_aurora"
+          ]
+        },
+        {
+          "type": "explanation",
+          "character": "nova",
+          "emotion": "explaining",
+          "text": "A prism spreads white light into a rainbow of colors, showing the visible spectrum.",
+          "visual": "visible_spectrum"
+        },
+        {
+          "type": "dialogue",
+          "character": "dr_aurora",
+          "emotion": "explaining",
+          "text": "That white glow is actually a mix of many wavelengths\u2014like shaking a box of crayons until all the colors blend together."
+        },
+        {
+          "type": "dialogue",
+          "character": "nova",
+          "emotion": "thinking",
+          "text": "But why do we still see white sunlight if it\u2019s a mixture of all those colors?"
+        },
+        {
+          "type": "explanation",
+          "character": "dr_aurora",
+          "emotion": "explaining",
+          "text": "Our eyes combine the many colors back into white, just as a blender turns many fruits into a smooth juice."
+        },
+        {
+          "type": "dialogue",
+          "character": "bolt",
+          "emotion": "silly",
+          "text": "So sunlight must be a secret recipe of blueberry pancakes that the Sun bakes every noon!"
+        },
+        {
+          "type": "explanation",
+          "character": "dr_aurora",
+          "emotion": "explaining",
+          "text": "With a spectrometer we can see each color as a separate line\u2014nothing\u2019s hidden, just scattered."
+        },
+        {
+          "type": "quiz",
+          "question": "Why does blue light get scattered more than red light in the atmosphere?",
+          "options": [
+            {
+              "text": "Because blue light has a shorter wavelength, so it is scattered more by tiny molecules.",
+              "correct": true,
+              "response": "Exactly! Shorter wavelengths bounce around more."
+            },
+            {
+              "text": "Because the sky is made of blue paint.",
+              "correct": false,
+              "response": "Nice guess, but the sky isn\u2019t painted."
+            },
+            {
+              "text": "Because the Sun only sends out blue light at noon.",
+              "correct": false,
+              "response": "The Sun sends all colors; it\u2019s the atmosphere that changes what we see."
+            }
+          ]
+        },
+        {
+          "type": "dialogue",
+          "character": "pip",
+          "emotion": "shy",
+          "text": "So the Sun\u2019s rainbow mixes, and the air acts like a screen that sorts colors\u2014blue gets tossed everywhere while reds stay straight."
+        },
+        {
+          "type": "transition",
+          "destination": "science_lab",
+          "text": "Armed with new knowledge, they glide down the mountain to Prof. Indigo\u2019s lab."
+        }
+      ]
+    },
+    {
+      "act": 3,
+      "title": "Expert 2 \u2013 Prof. Indigo",
+      "scenes": [
+        {
+          "type": "dialogue",
+          "character": "prof_indigo",
+          "emotion": "explaining",
+          "text": "Hey explorers! Let\u2019s watch light dance with a laser and some glitter.",
+          "background": "science_lab",
+          "charactersPresent": [
+            "nova",
+            "bolt",
+            "pip",
+            "prof_indigo"
+          ]
+        },
+        {
+          "type": "explanation",
+          "character": "nova",
+          "emotion": "explaining",
+          "text": "When the laser shines through glittery water, tiny specks send blue arrows scattering all around.",
+          "visual": "rayleigh_scattering_diagram"
+        },
+        {
+          "type": "dialogue",
+          "character": "prof_indigo",
+          "emotion": "explaining",
+          "text": "That\u2019s Rayleigh scattering\u2014tiny molecules bounce short\u2011wavelength light more than long\u2011wavelength light."
+        },
+        {
+          "type": "dialogue",
+          "character": "bolt",
+          "emotion": "silly",
+          "text": "So the glitter is magic fairy dust that paints the sky blue!"
+        },
+        {
+          "type": "explanation",
+          "character": "prof_indigo",
+          "emotion": "explaining",
+          "text": "The scattering intensity follows I \u221d 1/\u03bb\u2074, meaning blue (~450\u202fnm) is scattered about ten times more than red (~650\u202fnm)."
+        },
+        {
+          "type": "dialogue",
+          "character": "nova",
+          "emotion": "thinking",
+          "text": "But why does the size of the particle matter so much?"
+        },
+        {
+          "type": "explanation",
+          "character": "prof_indigo",
+          "emotion": "explaining",
+          "text": "Smaller particles are comparable to the light\u2019s wavelength, so they interact strongly; larger particles just let the light pass."
+        },
+        {
+          "type": "quiz",
+          "question": "Why does the sky turn red or orange at sunrise and sunset?",
+          "options": [
+            {
+              "text": "Because the sunlight travels through more atmosphere, scattering away the blue and letting reds reach our eyes.",
+              "correct": true,
+              "response": "Right! Longer path means more scattering of short wavelengths."
+            },
+            {
+              "text": "Because the Sun turns red at night.",
+              "correct": false,
+              "response": "The Sun doesn\u2019t change color, the atmosphere does."
+            },
+            {
+              "text": "Because clouds turn red at sunset.",
+              "correct": false,
+              "response": "Clouds can reflect red, but the main reason is the longer path through the air."
+            }
+          ]
+        },
+        {
+          "type": "dialogue",
+          "character": "bolt",
+          "emotion": "silly",
+          "text": "Maybe the sky turns red because the Sun gets embarrassed at bedtime!"
+        },
+        {
+          "type": "explanation",
+          "character": "prof_indigo",
+          "emotion": "explaining",
+          "text": "When the Sun is low, its light travels through a thick layer of air\u2014optical depth increases, so most blue is scattered away, leaving reds.",
+          "visual": "sunset_path_length"
+        },
+        {
+          "type": "quiz",
+          "question": "What is the name of the scattering that depends on wavelength to the fourth power?",
+          "options": [
+            {
+              "text": "Rayleigh scattering",
+              "correct": true,
+              "response": "You got it! That\u2019s the classic name."
+            },
+            {
+              "text": "Mie scattering",
+              "correct": false,
+              "response": "Mie scattering involves larger particles, not the tiny molecules that make the sky blue."
+            },
+            {
+              "text": "Doppler scattering",
+              "correct": false,
+              "response": "Doppler effect changes frequency, not scattering."
+            }
+          ]
+        },
+        {
+          "type": "transition",
+          "destination": "outside_hill",
+          "text": "Eager to see it for themselves, the team steps outside to a sunny hill."
+        }
+      ]
+    },
+    {
+      "act": 4,
+      "title": "The Observation",
+      "scenes": [
+        {
+          "type": "dialogue",
+          "character": "nova",
+          "emotion": "excited",
+          "text": "Look up! The sky is a brilliant blue\u2014just like the scattered arrows we saw.",
+          "background": "outside_hill",
+          "charactersPresent": [
+            "nova",
+            "bolt",
+            "pip"
+          ]
+        },
+        {
+          "type": "explanation",
+          "character": "pip",
+          "emotion": "explaining",
+          "text": "The tiny air molecules are tossing the blue light everywhere, so our eyes catch it from all directions."
+        },
+        {
+          "type": "dialogue",
+          "character": "bolt",
+          "emotion": "silly",
+          "text": "I guess the sky is a giant blueberry smoothie swirling above us!"
+        },
+        {
+          "type": "explanation",
+          "character": "nova",
+          "emotion": "explaining",
+          "text": "Exactly\u2014Rayleigh scattering spreads blue, and when the Sun sits low, the longer path removes that blue, revealing reds."
+        },
+        {
+          "type": "celebration",
+          "text": "The mystery of the blue sky is solved, and the friends cheer together."
+        }
+      ]
+    },
+    {
+      "act": 5,
+      "title": "The Answer",
+      "scenes": [
+        {
+          "type": "dialogue",
+          "character": "nova",
+          "emotion": "happy",
+          "text": "So, the sky is blue because tiny air molecules scatter short\u2011wavelength blue light far more than the other colors.",
+          "background": "clubhouse",
+          "charactersPresent": [
+            "nova",
+            "bolt",
+            "pip"
+          ]
+        },
+        {
+          "type": "dialogue",
+          "character": "pip",
+          "emotion": "shy",
+          "text": "In my own words: Sunlight is a rainbow, the air is a filter that flings blue everywhere, and the longer the light\u2019s journey, the redder it looks."
+        },
+        {
+          "type": "dialogue",
+          "character": "bolt",
+          "emotion": "excited",
+          "text": "And that\u2019s why the sky isn\u2019t a painted canvas\u2014it\u2019s a giant, sparkling, blue\u2011glitter party in the air!"
+        },
+        {
+          "type": "transition",
+          "destination": "clubhouse",
+          "text": "The team settles back into the clubhouse, ready for their next wonder."
+        },
+        {
+          "type": "celebration",
+          "text": "A burst of confetti shaped like tiny rainbows fills the room."
+        },
+        {
+          "type": "dialogue",
+          "character": "nova",
+          "emotion": "happy",
+          "text": "Thanks for exploring with us! Keep looking up and stay curious."
+        },
+        {
+          "type": "dialogue",
+          "character": "bolt",
+          "emotion": "happy",
+          "text": "And remember, every color has a story\u2014just ask the sky!"
+        },
+        {
+          "type": "dialogue",
+          "character": "pip",
+          "emotion": "happy",
+          "text": "See you next adventure!"
+        }
+      ]
+    }
+  ],
+  "key_visuals": [
+    {
+      "id": "visible_spectrum",
+      "moment": "when Nova first looks at a prism",
+      "description": "Diagram showing the continuous rainbow of colors that make up white sunlight, labeled with wavelengths from violet (~380\u202fnm) to red (~750\u202fnm).",
+      "type": "diagram"
+    },
+    {
+      "id": "rayleigh_scattering_diagram",
+      "moment": "Bolt drops glitter onto a model atmosphere",
+      "description": "Illustration of sunlight hitting tiny air molecules, with many short blue arrows scattering in all directions and fewer long red arrows continuing straight.",
+      "type": "diagram"
+    },
+    {
+      "id": "sunset_path_length",
+      "moment": "Pip points to a horizon silhouette",
+      "description": "Graphic comparing a short noon light path (thin blue layer) versus a long sunset path (thick orange layer), highlighting how much blue is removed along the longer route.",
+      "type": "diagram"
+    }
+  ],
+  "voice_map": {
+    "nova": "tara",
+    "bolt": "austin",
+    "pip": "leah",
+    "dr_aurora": "troy",
+    "prof_indigo": "hannah"
+  }
+}
