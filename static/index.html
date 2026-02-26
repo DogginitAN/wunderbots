@@ -11,7 +11,7 @@
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 body { font-family:'Fredoka',sans-serif; overflow:hidden; height:100vh; height:100dvh; }
 @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
-@keyframes slideUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+@keyframes slideUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
 @keyframes typing { 0%{opacity:0.3} 50%{opacity:1} 100%{opacity:0.3} }
 .typing-indicator { display:flex;gap:5px;padding:8px 20px;align-items:center; }
 .typing-indicator .dot { width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.5);animation:typing 1.2s ease-in-out infinite; }
@@ -22,6 +22,7 @@ body { font-family:'Fredoka',sans-serif; overflow:hidden; height:100vh; height:1
 @keyframes starPop { from{opacity:0;transform:scale(0) rotate(-20deg)} to{opacity:1;transform:scale(1) rotate(0deg)} }
 @keyframes twinkle { 0%,100%{opacity:0.3} 50%{opacity:1} }
 @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
 @keyframes speakPulse { 0%,100%{box-shadow:0 0 12px rgba(255,255,255,0.3)} 50%{box-shadow:0 0 24px rgba(255,255,255,0.6)} }
 @keyframes micPulse { 0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0.4)} 50%{box-shadow:0 0 0 12px rgba(239,68,68,0)} }
 
@@ -58,7 +59,7 @@ body { font-family:'Fredoka',sans-serif; overflow:hidden; height:100vh; height:1
 .tap-bar span { font-size:15px;color:rgba(255,255,255,0.8);font-weight:600;background:rgba(255,255,255,0.15);padding:8px 24px;border-radius:50px;backdrop-filter:blur(4px); }
 
 /* Scene Elements */
-.act-header { text-align:center;padding:20px 16px 12px;animation:slideDown 0.4s ease-out; }
+.act-header { text-align:center;padding:20px 16px 12px;animation:fadeIn 0.8s ease-out; }
 .act-header .pill { display:inline-block;padding:6px 20px;border-radius:50px;background:rgba(0,0,0,0.2);backdrop-filter:blur(4px); }
 .act-header .pill span { font-size:14px;font-weight:700;color:rgba(255,255,255,0.8);letter-spacing:1px; }
 
@@ -378,8 +379,8 @@ function updatePlayerChrome() {
   const tapBar = document.getElementById('tapBar');
   const scene = getCurrentScene();
   
-  if (shell) shell.style.background = grad.bg;
-  if (bg) bg.style.background = grad.ov;
+  if (shell) { shell.style.transition = 'background 1.5s ease'; shell.style.background = grad.bg; }
+  if (bg) { bg.style.transition = 'background 1.5s ease'; bg.style.background = grad.ov; }
   
   const showTap = !state.waitingQuiz && !state.finished && scene?.type !== "transition" && scene?.type !== "celebration";
   if (tapBar) tapBar.style.display = showTap ? '' : 'none';
@@ -564,10 +565,16 @@ function quizDone() {
 }
 
 function scrollBottom() {
-  setTimeout(() => {
+  requestAnimationFrame(() => {
     const el = document.getElementById('scroller');
-    if (el) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
-  }, 250);
+    if (!el) return;
+    // Only scroll if we're near the bottom already (within 300px)
+    // This prevents jarring jumps if user scrolled up to re-read
+    const nearBottom = (el.scrollHeight - el.scrollTop - el.clientHeight) < 400;
+    if (nearBottom) {
+      el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
+    }
+  });
 }
 
 // ─── NAVIGATION ─────────────────────────────────────────────────────────────
