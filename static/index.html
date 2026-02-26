@@ -196,7 +196,11 @@ let autoTimer = null;
 
 // ─── TTS AUDIO ENGINE (batch pre-generation) ────────────────────────────────
 const audioCache = new Map();  // sceneKey -> blob URL
-let currentAudio = null;
+// Single persistent Audio element — Safari unlocks per-element, so reusing
+// the same one that was played during the user gesture keeps it unlocked.
+const persistentAudio = new Audio();
+persistentAudio.preload = 'auto';
+let currentSceneKey = null;
 let ttsEnabled = true;
 
 function sceneKey(aI, sI) { return aI+'-'+sI; }
@@ -244,9 +248,7 @@ async function generateAllAudio(episode, onProgress) {
 
 function playSceneAudio(actIdx, sceneIdx) {
   if (!ttsEnabled) { console.log('[AUDIO] TTS disabled, skipping'); return; }
-  if (currentAudio) { 
-      currentAudio.pause(); currentAudio = null; 
-  }
+  
   const key = sceneKey(actIdx, sceneIdx);
   const url = audioCache.get(key);
   if (!url) { console.log('[AUDIO] No audio in cache for', key); return; }
@@ -254,42 +256,46 @@ function playSceneAudio(actIdx, sceneIdx) {
   // Get text length for fallback timing
   const scene = state.episode?.acts[actIdx]?.scenes[sceneIdx];
   const textLen = (scene?.text || '').length;
-  const fallbackMs = Math.max(4000, textLen * 80); // generous text-based fallback
+  const fallbackMs = Math.max(4000, textLen * 80);
 
-  currentAudio = new Audio(url);
-  currentAudio._sceneKey = key;
+  // Reuse the single persistent Audio element (Safari keeps it unlocked)
+  persistentAudio.pause();
+  currentSceneKey = key;
+  persistentAudio.src = url;
   
-  // Always set a fallback timer — if audio plays, onended clears it
+  // Always set a fallback timer
   clearTimeout(autoTimer);
   autoTimer = setTimeout(() => {
     console.log('Audio fallback timer fired for', key);
     if (!state.waitingQuiz && !state.finished) advance();
   }, fallbackMs);
 
-  currentAudio.onended = () => {
-    if (currentAudio && currentAudio._sceneKey === key) {
-      currentAudio = null;
+  persistentAudio.onended = () => {
+    if (currentSceneKey === key) {
+      currentSceneKey = null;
       if (!state.waitingQuiz && !state.finished) {
-        clearTimeout(autoTimer); // cancel fallback
+        clearTimeout(autoTimer);
         autoTimer = setTimeout(advance, 400);
       }
     }
   };
 
-  currentAudio.onerror = (e) => {
+  persistentAudio.onerror = (e) => {
     console.warn('Audio error for', key, e);
-    // Fallback timer already set, will handle advance
+    // Fallback timer handles advance
   };
 
-  currentAudio.play().then(() => {
-    }).catch(e => {
+  persistentAudio.play().then(() => {
+    console.log('[AUDIO] Playing:', key);
+  }).catch(e => {
     console.warn('[AUDIO] Play BLOCKED:', key, e.message);
-    // Fallback timer already set, will handle advance
+    // Fallback timer handles advance
   });
 }
 
 function stopAudio() {
-  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+  persistentAudio.pause();
+  currentSceneKey = null;
 }
 
 // ─── RENDERING HELPERS ──────────────────────────────────────────────────────
@@ -615,6 +621,7 @@ function goHome() {
   stopAudio();
   audioCache.forEach(url => URL.revokeObjectURL(url));
   audioCache.clear();
+  currentSceneKey = null;
   state = { screen:"home", episode:null, actIdx:0, sceneIdx:0, displayed:[], waitingQuiz:false, finished:false, bgKey:"clubhouse", introduced:new Set() };
   clearTimeout(autoTimer);
   render();
@@ -721,7 +728,7 @@ function beginPlayback() {
 let audioUnlocked = false;
 function unlockAudio() {
   if (audioUnlocked) return;
-  // Unlock both AudioContext AND HTML Audio for Safari
+  // Unlock AudioContext for Safari
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     const buf = ctx.createBuffer(1, 1, 22050);
@@ -731,12 +738,17 @@ function unlockAudio() {
     src.start(0);
     ctx.close();
   } catch(e) {}
-  // Also warm up an HTML Audio element
+  // Unlock the PERSISTENT Audio element — this is the one we reuse for all playback.
+  // Safari remembers that THIS element was played during a user gesture.
   try {
-    const a = new Audio();
-    a.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA/+M4wAAAAAAAAAAAAEluZm8AAAAPAAAAAwAAAbAAqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV////////////////////////////////////////////AAAAAExhdmM1OC4xMwAAAAAAAAAAAAAAACQAAAAAAAAAAAGw9WraoAAAAAAAAAAAAAAAAAAAAP/jOMAAAQoAKAAATAD/ExBgAA0A+RJKxoEAAG9FI0AAAAATQN/4hH/wIIocTB0AAAA';
-    a.volume = 0;
-    a.play().then(() => a.pause()).catch(() => {});
+    persistentAudio.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA/+M4wAAAAAAAAAAAAEluZm8AAAAPAAAAAwAAAbAAqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV////////////////////////////////////////////AAAAAExhdmM1OC4xMwAAAAAAAAAAAAAAACQAAAAAAAAAAAGw9WraoAAAAAAAAAAAAAAAAAAAAP/jOMAAAQoAKAAATAD/ExBgAA0A+RJKxoEAAG9FI0AAAAATQN/4hH/wIIocTB0AAAA';
+    persistentAudio.volume = 0;
+    persistentAudio.play().then(() => {
+      persistentAudio.pause();
+      persistentAudio.volume = 1;
+      persistentAudio.currentTime = 0;
+      console.log('[AUDIO] Persistent element unlocked for Safari');
+    }).catch(() => {});
   } catch(e) {}
   audioUnlocked = true;
 }
