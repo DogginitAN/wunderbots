@@ -110,7 +110,7 @@ SCHEMA:
     "nova": {"id":"nova","name":"Nova","role":"guide","color":"#7C3AED","accentColor":"#FCD34D","emoji":"⭐","personality":"curious and brave"},
     "bolt": {"id":"bolt","name":"Bolt","role":"guide","color":"#2563EB","accentColor":"#FDE047","emoji":"⚡","personality":"silly and energetic"},
     "pip": {"id":"pip","name":"Pip","role":"guide","color":"#16A34A","accentColor":"#F9A8D4","emoji":"🌱","personality":"shy but smart"},
-    "expert_id": {"id":"expert_id","name":"Name","role":"expert","color":"#HEX","accentColor":"#HEX","emoji":"🔬","personality":"description"}
+    "expert_id": {"id":"expert_id","name":"Name","role":"expert","gender":"female","color":"#HEX","accentColor":"#HEX","emoji":"🔬","personality":"description"}
   },
   "acts": [{"act":1,"title":"string","scenes":[]}],
   "key_visuals": [{"id":"string","description":"string","type":"diagram"}]
@@ -125,7 +125,7 @@ Write the complete episode script as a JSON scene graph.
 
 Requirements:
 - Follow the 5-act structure exactly
-- EVERY expert from the outline MUST appear in the "characters" object with role "expert"
+- EVERY expert from the outline MUST appear in the "characters" object with role "expert" and a "gender" field ("female" or "male")
 - ONLY use these emotions: neutral, excited, thinking, surprised, happy, explaining, silly, shy
 - Include all quiz checkpoints from the outline (3 quizzes, each with exactly 3 options)
 - Reference all key visuals from the outline using their IDs

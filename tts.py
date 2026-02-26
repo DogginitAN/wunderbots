@@ -36,18 +36,22 @@ GUIDE_VOICES = {
 }
 
 # Pool of voices for rotating experts (each episode gets different experts)
-EXPERT_VOICE_POOL = [
-    # Female experts
+EXPERT_VOICES_FEMALE = [
     "67oeJmj7jIMsdE6yXPr5",   # Custom F1 — warm mentor, Ms. Frizzle energy
     "ZT9u07TYPVl83ejeLakq",   # Custom F2 — cool calm scientist
     "y5LC9pxhb6k0W8IrQUXS",   # Custom F3 — energetic adventurer
     "0rEo3eAjssGDUCXHYENf",   # Custom F4 — gentle grandmother storyteller
-    # Male experts
+]
+
+EXPERT_VOICES_MALE = [
     "MDLAMJ0jxkpYkjXbmG4t",   # Custom M1 — booming enthusiast, jolly and dramatic
     "g2W4HAjKvdW93AmsjsOx",   # Custom M2 — nerdy professor, quick-talking and fascinated
     "Fz7HYdHHCP1EF1FLn46C",   # Custom M3 — laid-back guide, smooth and chill
     "n1PvBOwxb8X6m7tahp2h",   # Custom M4 — dramatic storyteller, theatrical and epic
 ]
+
+# Fallback combined pool for episodes without gender data
+EXPERT_VOICE_POOL = EXPERT_VOICES_FEMALE + EXPERT_VOICES_MALE
 
 # ─── Emotion → voice settings + stage directions ─────────────────────────────
 # ElevenLabs reads emotion from textual cues. We prepend stage directions
@@ -88,17 +92,31 @@ CHARACTER_DIRECTIONS = {
 
 
 def build_expert_voice_map(characters: dict) -> dict:
-    """Build a character_id → voice_id map for an episode's characters."""
+    """Build a character_id → voice_id map for an episode's characters.
+    
+    Uses the expert's gender field to pick from the right voice pool.
+    Falls back to the combined pool if gender isn't specified.
+    """
     voice_map = {}
-    expert_idx = 0
+    female_idx = 0
+    male_idx = 0
+    fallback_idx = 0
 
     for char_id, char in characters.items():
         if char_id in GUIDE_VOICES:
             voice_map[char_id] = GUIDE_VOICES[char_id]
         else:
-            # Rotate through expert voice pool
-            voice_map[char_id] = EXPERT_VOICE_POOL[expert_idx % len(EXPERT_VOICE_POOL)]
-            expert_idx += 1
+            gender = char.get("gender", "").lower() if isinstance(char, dict) else ""
+            if gender == "female":
+                voice_map[char_id] = EXPERT_VOICES_FEMALE[female_idx % len(EXPERT_VOICES_FEMALE)]
+                female_idx += 1
+            elif gender == "male":
+                voice_map[char_id] = EXPERT_VOICES_MALE[male_idx % len(EXPERT_VOICES_MALE)]
+                male_idx += 1
+            else:
+                # No gender specified — use combined pool
+                voice_map[char_id] = EXPERT_VOICE_POOL[fallback_idx % len(EXPERT_VOICE_POOL)]
+                fallback_idx += 1
 
     return voice_map
 
