@@ -208,20 +208,42 @@ function playSceneAudio(actIdx, sceneIdx) {
   if (currentAudio) { currentAudio.pause(); currentAudio = null; }
   const key = sceneKey(actIdx, sceneIdx);
   const url = audioCache.get(key);
-  if (url) {
-    currentAudio = new Audio(url);
-    currentAudio._sceneKey = key;
-    currentAudio.play().catch(e => console.warn('Audio play blocked:', e));
-    currentAudio.onended = () => {
-      if (currentAudio && currentAudio._sceneKey === key) {
-        currentAudio = null;
-        if (!state.waitingQuiz && !state.finished) {
-          clearTimeout(autoTimer);
-          autoTimer = setTimeout(advance, 500);
-        }
+  if (!url) return;
+
+  // Get text length for fallback timing
+  const scene = state.episode?.acts[actIdx]?.scenes[sceneIdx];
+  const textLen = (scene?.text || '').length;
+  const fallbackMs = Math.max(4000, textLen * 80); // generous text-based fallback
+
+  currentAudio = new Audio(url);
+  currentAudio._sceneKey = key;
+  
+  // Always set a fallback timer — if audio plays, onended clears it
+  clearTimeout(autoTimer);
+  autoTimer = setTimeout(() => {
+    console.log('Audio fallback timer fired for', key);
+    if (!state.waitingQuiz && !state.finished) advance();
+  }, fallbackMs);
+
+  currentAudio.onended = () => {
+    if (currentAudio && currentAudio._sceneKey === key) {
+      currentAudio = null;
+      if (!state.waitingQuiz && !state.finished) {
+        clearTimeout(autoTimer); // cancel fallback
+        autoTimer = setTimeout(advance, 400);
       }
-    };
-  }
+    }
+  };
+
+  currentAudio.onerror = (e) => {
+    console.warn('Audio error for', key, e);
+    // Fallback timer already set, will handle advance
+  };
+
+  currentAudio.play().catch(e => {
+    console.warn('Audio play blocked:', e);
+    // Fallback timer already set, will handle advance
+  });
 }
 
 function stopAudio() {
@@ -628,17 +650,27 @@ async function startEpisode(episode) {
 let audioUnlocked = false;
 function unlockAudio() {
   if (audioUnlocked) return;
-  const ctx = new (window.AudioContext || window.webkitAudioContext)();
-  const buf = ctx.createBuffer(1, 1, 22050);
-  const src = ctx.createBufferSource();
-  src.buffer = buf;
-  src.connect(ctx.destination);
-  src.start(0);
+  // Unlock both AudioContext AND HTML Audio for Safari
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const buf = ctx.createBuffer(1, 1, 22050);
+    const src = ctx.createBufferSource();
+    src.buffer = buf;
+    src.connect(ctx.destination);
+    src.start(0);
+    ctx.close();
+  } catch(e) {}
+  // Also warm up an HTML Audio element
+  try {
+    const a = new Audio();
+    a.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA/+M4wAAAAAAAAAAAAEluZm8AAAAPAAAAAwAAAbAAqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV////////////////////////////////////////////AAAAAExhdmM1OC4xMwAAAAAAAAAAAAAAACQAAAAAAAAAAAGw9WraoAAAAAAAAAAAAAAAAAAAAP/jOMAAAQoAKAAATAD/ExBgAA0A+RJKxoEAAG9FI0AAAAATQN/4hH/wIIocTB0AAAA';
+    a.volume = 0;
+    a.play().then(() => a.pause()).catch(() => {});
+  } catch(e) {}
   audioUnlocked = true;
-  ctx.close();
 }
-document.addEventListener('click', unlockAudio, { once: true });
-document.addEventListener('touchstart', unlockAudio, { once: true });
+document.addEventListener('click', unlockAudio);
+document.addEventListener('touchstart', unlockAudio);
 
 // ─── VOICE INPUT (STT) ─────────────────────────────────────────────────────
 let mediaRecorder = null;
