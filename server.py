@@ -283,13 +283,12 @@ async def api_tts_batch(request):
     """Generate TTS for all dialogue scenes in an episode at once.
     
     POST /api/tts/batch
-    {
-        "episode": { ... full episode JSON ... }
-    }
+    { "episode": { ... full episode JSON ... } }
     
-    Returns: { "audio": { "0-0": "base64mp3", "0-1": "base64mp3", ... } }
+    Returns: { "audio": { "0-0": "base64mp3", ... } }
     """
     import base64
+    import asyncio
     try:
         body = await request.json()
         episode = body.get("episode", {})
@@ -321,15 +320,20 @@ async def api_tts_batch(request):
         log.info(f"Batch TTS: generating {len(scenes_to_generate)} scenes")
         t0 = time.time()
         
-        audio_map = {}
-        for i, s in enumerate(scenes_to_generate):
-            try:
-                audio_bytes = generate_speech(s["text"], s["voice"], s["emotion"], s["character"])
-                audio_map[s["key"]] = base64.b64encode(audio_bytes).decode("ascii")
-                log.info(f"  Batch TTS {i+1}/{len(scenes_to_generate)}: {s['key']} OK ({len(audio_bytes)} bytes)")
-            except Exception as e:
-                log.warning(f"  Batch TTS {i+1}/{len(scenes_to_generate)}: {s['key']} FAILED: {e}")
-                # Skip failed scenes — they just won't have audio
+        # Run blocking TTS calls in a thread to not block the event loop
+        def generate_all():
+            audio_map = {}
+            for i, s in enumerate(scenes_to_generate):
+                try:
+                    audio_bytes = generate_speech(s["text"], s["voice"], s["emotion"], s["character"])
+                    audio_map[s["key"]] = base64.b64encode(audio_bytes).decode("ascii")
+                    if (i+1) % 5 == 0:
+                        log.info(f"  Batch TTS progress: {i+1}/{len(scenes_to_generate)}")
+                except Exception as e:
+                    log.warning(f"  Batch TTS {s['key']} FAILED: {e}")
+            return audio_map
+        
+        audio_map = await asyncio.to_thread(generate_all)
         
         log.info(f"Batch TTS done: {len(audio_map)}/{len(scenes_to_generate)} scenes in {time.time()-t0:.1f}s")
         
