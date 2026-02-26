@@ -308,10 +308,13 @@ function renderHome() {
 
 function renderLoading() {
   return `<div class="loading">
-    <div class="spinner">🔭</div>
-    <div class="text">Finding experts to answer<br>your question...</div>
-    <div class="bots">⭐ ⚡ 🌱</div>
+    <div class="spinner" id="load-spinner">🔭</div>
+    <div class="text" id="load-text">Finding experts to answer<br>your question...</div>
+    <div class="bots" id="load-bots">⭐ ⚡ 🌱</div>
     <div class="status" id="load-status">Researching...</div>
+    <button id="start-btn" onclick="beginPlayback()" style="display:none;margin-top:24px;padding:20px 48px;border-radius:50px;background:linear-gradient(135deg,#FCD34D,#F59E0B);color:#1E1B4B;border:4px solid white;font-size:24px;font-weight:800;cursor:pointer;font-family:'Fredoka',sans-serif;box-shadow:0 8px 32px rgba(0,0,0,0.3),0 0 60px rgba(252,211,77,0.4);animation:pulse 2s ease-in-out infinite">
+      ▶ Start Story!
+    </button>
   </div>`;
 }
 
@@ -623,22 +626,43 @@ async function startEpisode(episode) {
 
   // Generate ALL audio before starting (loading screen stays visible)
   if (ttsEnabled) {
-    const statusEl = document.getElementById('loading-text');
+    const statusEl = document.getElementById('load-status');
     const count = await generateAllAudio(episode, msg => {
       if (statusEl) statusEl.textContent = msg;
     });
     console.log('All audio ready:', count, 'scenes');
   }
 
-  // NOW start playing — every scene has audio pre-loaded
+  // Show "Start Story" button — user tap gives us a fresh gesture for audio
+  const spinner = document.getElementById('load-spinner');
+  const text = document.getElementById('load-text');
+  const bots = document.getElementById('load-bots');
+  const status = document.getElementById('load-status');
+  const btn = document.getElementById('start-btn');
+  
+  if (spinner) spinner.textContent = '✨';
+  if (spinner) spinner.style.animation = 'bounce 0.8s ease-in-out infinite';
+  if (text) text.innerHTML = 'Your story is ready!';
+  if (bots) bots.style.display = 'none';
+  if (status) status.textContent = '';
+  if (btn) btn.style.display = 'inline-block';
+}
+
+// Called when user taps "Start Story" — THIS is the user gesture that unlocks audio
+function beginPlayback() {
+  // Unlock audio with this fresh gesture
+  unlockAudio();
+  
+  const first = state.episode.acts[0]?.scenes[0];
+
+  // Switch to player
   state.screen = "playing";
   render();
 
-  // Play first scene — audio drives pacing if available
+  // Play first scene — this tap IS the gesture, audio will work
   const firstKey = sceneKey(0, 0);
   if (ttsEnabled && audioCache.has(firstKey)) {
     playSceneAudio(0, 0);
-    // No text timer — onended will advance
   } else {
     const len = (first?.text||'').length;
     autoTimer = setTimeout(advance, Math.max(4000, len * 80));
@@ -863,7 +887,7 @@ async function playLibraryEpisode(slug) {
   // Show loading
   document.getElementById('home').style.display = 'none';
   document.getElementById('loading').style.display = 'flex';
-  document.getElementById('loading-text').textContent = 'Loading saved episode...';
+  document.getElementById('load-status').textContent = 'Loading saved episode...';
   
   try {
     const res = await fetch('/api/library/' + slug);
