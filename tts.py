@@ -30,7 +30,7 @@ GUIDE_VOICES = {
     # Nova — confident, warm, leader energy
     "nova": "iukn3a1vSSNFmdi5NZS4",     # "Paula Paw" — heroic, adventurous, expressive cartoon lead
     # Bolt — energetic, playful, kid-like
-    "bolt": "ocZQ262SsZb9RIxcQBOj",     # "Lulu Lollipop" — bubbly, high-pitched, energetic cartoon kid
+    "bolt": "2f1b6Q2ICKpLzWrEEYVE",     # Custom voice — energetic goofy cartoon boy, lovable sidekick
     # Pip — soft, gentle, thoughtful
     "pip": "cN9lACJjByQco3FyvGzE",       # Custom voice — soft, gentle, whimsical fairy/owl character
 }
