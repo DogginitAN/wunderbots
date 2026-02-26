@@ -32,7 +32,7 @@ GUIDE_VOICES = {
     # Bolt — energetic, playful, kid-like
     "bolt": "ocZQ262SsZb9RIxcQBOj",     # "Lulu Lollipop" — bubbly, high-pitched, energetic cartoon kid
     # Pip — soft, gentle, thoughtful
-    "pip": "MF3mGyEYCl7XYWbV9V6O",       # "Elli" — soft female, gentle & kind
+    "pip": "cN9lACJjByQco3FyvGzE",       # Custom voice — soft, gentle, whimsical fairy/owl character
 }
 
 # Pool of voices for rotating experts (each episode gets different experts)
