@@ -278,6 +278,67 @@ async def api_library_episode(request):
         return JSONResponse({"error": str(e)}, status_code=500)
 
 
+
+async def api_tts_batch(request):
+    """Generate TTS for all dialogue scenes in an episode at once.
+    
+    POST /api/tts/batch
+    {
+        "episode": { ... full episode JSON ... }
+    }
+    
+    Returns: { "audio": { "0-0": "base64mp3", "0-1": "base64mp3", ... } }
+    """
+    import base64
+    try:
+        body = await request.json()
+        episode = body.get("episode", {})
+        
+        if not episode.get("acts"):
+            return JSONResponse({"error": "No episode data"}, status_code=400)
+        
+        voice_map = episode.get("voice_map", {})
+        if not voice_map:
+            voice_map = build_expert_voice_map(episode.get("characters", {}))
+        
+        # Collect all scenes that need audio
+        scenes_to_generate = []
+        for ai, act in enumerate(episode["acts"]):
+            for si, scene in enumerate(act.get("scenes", [])):
+                if scene.get("type") in ("dialogue", "explanation") and scene.get("text"):
+                    key = f"{ai}-{si}"
+                    char_id = scene.get("character", "")
+                    voice_id = voice_map.get(char_id, "pNInz6obpgDQGcFmaJgB")
+                    emotion = scene.get("emotion", "neutral")
+                    scenes_to_generate.append({
+                        "key": key,
+                        "text": scene["text"],
+                        "voice": voice_id,
+                        "emotion": emotion,
+                        "character": char_id,
+                    })
+        
+        log.info(f"Batch TTS: generating {len(scenes_to_generate)} scenes")
+        t0 = time.time()
+        
+        audio_map = {}
+        for i, s in enumerate(scenes_to_generate):
+            try:
+                audio_bytes = generate_speech(s["text"], s["voice"], s["emotion"], s["character"])
+                audio_map[s["key"]] = base64.b64encode(audio_bytes).decode("ascii")
+                log.info(f"  Batch TTS {i+1}/{len(scenes_to_generate)}: {s['key']} OK ({len(audio_bytes)} bytes)")
+            except Exception as e:
+                log.warning(f"  Batch TTS {i+1}/{len(scenes_to_generate)}: {s['key']} FAILED: {e}")
+                # Skip failed scenes — they just won't have audio
+        
+        log.info(f"Batch TTS done: {len(audio_map)}/{len(scenes_to_generate)} scenes in {time.time()-t0:.1f}s")
+        
+        return JSONResponse({"audio": audio_map})
+        
+    except Exception as e:
+        log.error(f"Batch TTS error: {e}")
+        return JSONResponse({"error": str(e)}, status_code=500)
+
 async def api_stt(request):
     """Transcribe audio to text using Groq Whisper.
     
@@ -333,6 +394,7 @@ routes = [
     Route("/health", health),
     Route("/api/generate", api_generate, methods=["POST"]),
     Route("/api/tts", api_tts, methods=["POST"]),
+    Route("/api/tts/batch", api_tts_batch, methods=["POST"]),
     Route("/api/stt", api_stt, methods=["POST"]),
     Route("/api/library", api_library),
     Route("/api/library/{slug}", api_library_episode),

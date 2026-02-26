@@ -150,88 +150,52 @@ const SUGGESTIONS = [
 let state = { screen:"home", episode:null, actIdx:0, sceneIdx:0, displayed:[], waitingQuiz:false, finished:false, bgKey:"clubhouse", introduced:new Set() };
 let autoTimer = null;
 
-// ─── TTS AUDIO ENGINE ───────────────────────────────────────────────────────
-const audioCache = new Map();
+// ─── TTS AUDIO ENGINE (batch pre-generation) ────────────────────────────────
+const audioCache = new Map();  // sceneKey -> blob URL
 let currentAudio = null;
 let ttsEnabled = true;
 
 function sceneKey(aI, sI) { return aI+'-'+sI; }
 
-async function fetchTTS(text, voice, emotion, slug, sceneKey, character) {
-  // First: check if audio is cached in the library
-  if (slug && sceneKey) {
-    try {
-      const cached = await fetch('/api/library/' + slug + '/audio/' + sceneKey);
-      if (cached.ok) {
-        const blob = await cached.blob();
-        console.log('Audio cache hit:', sceneKey);
-        return URL.createObjectURL(blob);
-      }
-    } catch (e) { /* cache miss, fall through to TTS */ }
-  }
-  
-  // Not cached — generate via TTS and let server cache it
+// Generate ALL audio for an episode at once via /api/tts/batch
+async function generateAllAudio(episode, onProgress) {
   try {
-    const body = { text, voice, emotion, character };
-    if (slug) body.slug = slug;
-    if (sceneKey) body.scene_key = sceneKey;
+    if (onProgress) onProgress('Creating character voices...');
     
-    const res = await fetch('/api/tts', {
+    const res = await fetch('/api/tts/batch', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
+      body: JSON.stringify({ episode })
     });
-    if (!res.ok) return null;
-    const blob = await res.blob();
-    return URL.createObjectURL(blob);
-  } catch (e) {
-    console.warn('TTS fetch failed:', e);
-    return null;
-  }
-}
-
-// Audio fetch queue — processes 2 at a time to avoid rate limits
-let fetchQueue = [];
-let fetchActive = 0;
-const MAX_CONCURRENT_TTS = 2;
-
-function processFetchQueue() {
-  while (fetchActive < MAX_CONCURRENT_TTS && fetchQueue.length > 0) {
-    const job = fetchQueue.shift();
-    fetchActive++;
-    fetchTTS(job.text, job.voice, job.emotion, job.slug, job.key, job.charId)
-      .then(url => {
-        if (url) audioCache.set(job.key, url);
-      })
-      .finally(() => {
-        fetchActive--;
-        processFetchQueue();
-      });
-  }
-}
-
-function prefetchAudio(fromAct, fromScene, count) {
-  if (!ttsEnabled || !state.episode) return;
-  const ep = state.episode;
-  const voiceMap = ep.voice_map || {};
-  const slug = ep.question ? ep.question.toLowerCase().replace(/[^\w\s-]/g,'').replace(/[\s_-]+/g,'-').slice(0,60).replace(/-$/,'') : '';
-  let aI = fromAct, sI = fromScene, queued = 0;
-  while (queued < count && aI < ep.acts.length) {
-    const act = ep.acts[aI];
-    if (sI < act.scenes.length) {
-      const scene = act.scenes[sI];
-      const key = sceneKey(aI, sI);
-      if (!audioCache.has(key) && !fetchQueue.some(j => j.key === key) && scene.text && (scene.type === 'dialogue' || scene.type === 'explanation')) {
-        const voice = voiceMap[scene.character] || 'pNInz6obpgDQGcFmaJgB';
-        const emotion = scene.emotion || 'neutral';
-        const charId = scene.character || '';
-        fetchQueue.push({ text: scene.text, voice, emotion, slug, key, charId });
-        queued++;
+    
+    if (!res.ok) {
+      console.error('Batch TTS failed:', res.status);
+      return 0;
+    }
+    
+    const data = await res.json();
+    const audioMap = data.audio || {};
+    
+    // Convert base64 to blob URLs and store in cache
+    let loaded = 0;
+    for (const [key, b64] of Object.entries(audioMap)) {
+      try {
+        const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+        const blob = new Blob([bytes], { type: 'audio/mpeg' });
+        audioCache.set(key, URL.createObjectURL(blob));
+        loaded++;
+      } catch (e) {
+        console.warn('Failed to decode audio for', key);
       }
-      sI++;
-    } else { aI++; sI = 0; }
+    }
+    
+    if (onProgress) onProgress('Ready!');
+    console.log('Batch TTS loaded:', loaded, 'scenes');
+    return loaded;
+  } catch (e) {
+    console.error('Batch TTS error:', e);
+    return 0;
   }
-  processFetchQueue();
 }
 
 function playSceneAudio(actIdx, sceneIdx) {
@@ -241,11 +205,9 @@ function playSceneAudio(actIdx, sceneIdx) {
   const url = audioCache.get(key);
   if (url) {
     currentAudio = new Audio(url);
-    // Track which scene this audio belongs to
     currentAudio._sceneKey = key;
     currentAudio.play().catch(e => console.warn('Audio play blocked:', e));
     currentAudio.onended = () => {
-      // Only advance if we're still on the same scene
       if (currentAudio && currentAudio._sceneKey === key) {
         currentAudio = null;
         if (!state.waitingQuiz && !state.finished) {
@@ -255,7 +217,6 @@ function playSceneAudio(actIdx, sceneIdx) {
       }
     };
   }
-  prefetchAudio(actIdx, sceneIdx + 1, 3);
 }
 
 function stopAudio() {
@@ -440,9 +401,6 @@ function advance() {
   render();
   scrollBottom();
 
-  // Always prefetch ahead regardless of scene type
-  if (ttsEnabled) prefetchAudio(state.actIdx, state.sceneIdx, 5);
-
   // Play audio for dialogue/explanation scenes
   if ((next.type === "dialogue" || next.type === "explanation")) {
     if (ttsEnabled) playSceneAudio(state.actIdx, state.sceneIdx);
@@ -547,7 +505,7 @@ async function submitQuestion() {
   }
 }
 
-// ─── START EPISODE WITH AUDIO WARM-UP ─────────────────────────────────────
+// ─── START EPISODE ────────────────────────────────────────────────────────
 async function startEpisode(episode) {
   state.episode = episode;
   state.actIdx = 0;
@@ -561,34 +519,20 @@ async function startEpisode(episode) {
   const first = episode.acts[0]?.scenes[0];
   if (first?.background && GRADIENTS[first.background]) state.bgKey = first.background;
 
-  // Start prefetching audio for first 8 scenes
-  prefetchAudio(0, 0, 8);
-
+  // Generate ALL audio before starting (loading screen stays visible)
   if (ttsEnabled) {
-    // Show "Creating voices..." on loading screen
     const statusEl = document.getElementById('loading-text');
-    if (statusEl) statusEl.textContent = 'Creating character voices...';
-
-    // Wait for first scene audio to be ready (poll every 500ms, up to 8s)
-    const firstKey = sceneKey(0, 0);
-    let ready = false;
-    for (let i = 0; i < 16; i++) {
-      if (audioCache.has(firstKey)) { ready = true; break; }
-      await new Promise(r => setTimeout(r, 500));
-    }
-
-    // Bonus: wait a tiny bit more for scene 2-3 to cache too
-    if (ready) {
-      if (statusEl) statusEl.textContent = 'Almost ready...';
-      await new Promise(r => setTimeout(r, 1500));
-    }
+    const count = await generateAllAudio(episode, msg => {
+      if (statusEl) statusEl.textContent = msg;
+    });
+    console.log('All audio ready:', count, 'scenes');
   }
 
-  // NOW start playing
+  // NOW start playing — every scene has audio pre-loaded
   state.screen = "playing";
   render();
 
-  // Play first scene audio
+  // Play first scene
   if (ttsEnabled) playSceneAudio(0, 0);
 
   // Text timer as fallback
