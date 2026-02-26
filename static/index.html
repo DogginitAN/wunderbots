@@ -105,6 +105,44 @@ body { font-family:'Fredoka',sans-serif; overflow:hidden; height:100vh; height:1
 .celebration .msg { font-size:24px;font-weight:800;color:#1E293B;margin-bottom:12px;line-height:1.4; }
 .celebration .stars { display:flex;justify-content:center;gap:8px;margin-bottom:24px;font-size:32px; }
 .celebration .again-btn { padding:16px 40px;border-radius:50px;background:linear-gradient(135deg,#F59E0B,#EF4444);color:white;border:none;font-size:20px;font-weight:700;cursor:pointer;font-family:'Fredoka',sans-serif;box-shadow:0 6px 24px rgba(245,158,11,0.4); }
+
+/* Flipbook Transitions */
+.flipbook-overlay {
+  position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;
+  transition:opacity 0.4s ease;
+}
+.flipbook-frame {
+  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  opacity:0;transition:opacity 0.5s ease;
+}
+.flipbook-frame.active { opacity:1; }
+.flipbook-vehicle { position:relative;width:180px;height:180px; }
+
+/* Rocket */
+@keyframes rocketLift { 0%{transform:translateY(60px) scale(0.8)} 30%{transform:translateY(0) scale(1)} 100%{transform:translateY(0) scale(1)} }
+@keyframes rocketFly { 0%{transform:translateY(0)} 100%{transform:translateY(-300px) scale(0.4);opacity:0} }
+@keyframes rocketFlame { 0%,100%{transform:scaleY(1) scaleX(1)} 50%{transform:scaleY(1.3) scaleX(0.8)} }
+@keyframes rocketShake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-2px)} 75%{transform:translateX(2px)} }
+
+/* Submarine */
+@keyframes subDive { 0%{transform:translateY(-40px)} 100%{transform:translateY(40px)} }
+@keyframes subBob { 0%,100%{transform:rotate(-2deg)} 50%{transform:rotate(2deg)} }
+@keyframes bubble { 0%{transform:translateY(0) scale(1);opacity:0.7} 100%{transform:translateY(-80px) scale(0.3);opacity:0} }
+
+/* Balloon */
+@keyframes balloonFloat { 0%{transform:translateY(40px)} 100%{transform:translateY(-20px)} }
+@keyframes balloonSway { 0%,100%{transform:rotate(-3deg)} 50%{transform:rotate(3deg)} }
+
+/* Destination reveal */
+@keyframes destReveal { 0%{opacity:0;transform:scale(0.9) translateY(20px)} 100%{opacity:1;transform:scale(1) translateY(0)} }
+@keyframes destGlow { 0%,100%{filter:brightness(1)} 50%{filter:brightness(1.2)} }
+
+/* Postcard arrival */
+@keyframes postcardIn { 0%{transform:scale(0.3) rotate(-10deg);opacity:0} 60%{transform:scale(1.05) rotate(2deg);opacity:1} 100%{transform:scale(1) rotate(0deg);opacity:1} }
+
+/* Stars/particles */
+@keyframes starTrail { 0%{transform:translateY(0);opacity:1} 100%{transform:translateY(60px);opacity:0} }
+@keyframes bubbleRise { 0%{transform:translateY(0);opacity:0.6} 100%{transform:translateY(-120px);opacity:0} }
 </style>
 </head>
 <body>
@@ -517,7 +555,11 @@ async function advance() {
       autoTimer = setTimeout(advance, Math.max(3500, len * 75));
     }
   } else if (next.type === "transition") {
-    autoTimer = setTimeout(advance, 3000);
+    // Flipbook animated transition
+    playFlipbook(next, () => {
+      if (!state.waitingQuiz && !state.finished) advance();
+    });
+    return; // playFlipbook handles timing
   } else if (next.type !== "quiz" && next.type !== "celebration") {
     const len = (next.text||'').length;
     autoTimer = setTimeout(advance, Math.max(3000, len * 70));
@@ -925,6 +967,226 @@ function render() {
   else if (state.screen === "playing") app.innerHTML = renderPlayer();
 }
 
+
+// ─── FLIPBOOK TRANSITION SYSTEM ─────────────────────────────────────────────
+
+const VEHICLE_SVG = {
+  rocket: (chars) => `
+    <svg viewBox="0 0 180 220" width="180" height="220" style="animation:rocketShake 0.15s ease-in-out infinite">
+      <defs>
+        <linearGradient id="rktBody" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#E2E8F0"/><stop offset="100%" stop-color="#94A3B8"/></linearGradient>
+        <linearGradient id="rktNose" x1="0.5" y1="0" x2="0.5" y2="1"><stop offset="0%" stop-color="#EF4444"/><stop offset="100%" stop-color="#DC2626"/></linearGradient>
+      </defs>
+      <!-- Flame -->
+      <g style="animation:rocketFlame 0.3s ease-in-out infinite">
+        <ellipse cx="90" cy="205" rx="18" ry="14" fill="#FCD34D" opacity="0.9"/>
+        <ellipse cx="90" cy="200" rx="12" ry="18" fill="#F97316"/>
+        <ellipse cx="90" cy="195" rx="7" ry="12" fill="#FBBF24"/>
+      </g>
+      <!-- Body -->
+      <rect x="65" y="70" width="50" height="110" rx="8" fill="url(#rktBody)" stroke="#64748B" stroke-width="2"/>
+      <!-- Nose cone -->
+      <path d="M65 70 Q90 15 115 70 Z" fill="url(#rktNose)" stroke="#B91C1C" stroke-width="2"/>
+      <!-- Window -->
+      <circle cx="90" cy="105" r="18" fill="#0EA5E9" stroke="#64748B" stroke-width="2"/>
+      <circle cx="90" cy="105" r="14" fill="#38BDF8"/>
+      <!-- Character emojis in window -->
+      <text x="90" y="110" text-anchor="middle" font-size="14">${(chars||['⭐','⚡','🌱']).join('')}</text>
+      <!-- Fins -->
+      <path d="M65 160 L48 185 L65 175 Z" fill="#EF4444" stroke="#B91C1C" stroke-width="1.5"/>
+      <path d="M115 160 L132 185 L115 175 Z" fill="#EF4444" stroke="#B91C1C" stroke-width="1.5"/>
+    </svg>`,
+
+  submarine: (chars) => `
+    <svg viewBox="0 0 220 140" width="220" height="140" style="animation:subBob 2s ease-in-out infinite">
+      <defs>
+        <linearGradient id="subBody" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FCD34D"/><stop offset="100%" stop-color="#F59E0B"/></linearGradient>
+      </defs>
+      <!-- Body -->
+      <ellipse cx="110" cy="80" rx="85" ry="38" fill="url(#subBody)" stroke="#D97706" stroke-width="2.5"/>
+      <!-- Conning tower -->
+      <rect x="88" y="38" width="35" height="30" rx="6" fill="#FBBF24" stroke="#D97706" stroke-width="2"/>
+      <!-- Periscope -->
+      <rect x="103" y="18" width="6" height="24" rx="3" fill="#64748B"/>
+      <rect x="100" y="16" width="16" height="6" rx="3" fill="#64748B"/>
+      <!-- Window -->
+      <circle cx="110" cy="75" r="20" fill="#0EA5E9" stroke="#D97706" stroke-width="2"/>
+      <circle cx="110" cy="75" r="16" fill="#7DD3FC"/>
+      <text x="110" y="80" text-anchor="middle" font-size="14">${(chars||['⭐','⚡','🌱']).join('')}</text>
+      <!-- Propeller -->
+      <circle cx="198" cy="80" r="4" fill="#64748B"/>
+      <ellipse cx="205" cy="72" rx="3" ry="10" fill="#94A3B8" transform="rotate(20 205 72)"/>
+      <ellipse cx="205" cy="88" rx="3" ry="10" fill="#94A3B8" transform="rotate(-20 205 88)"/>
+      <!-- Portholes -->
+      <circle cx="60" cy="80" r="8" fill="#BAE6FD" stroke="#D97706" stroke-width="1.5"/>
+      <circle cx="160" cy="80" r="8" fill="#BAE6FD" stroke="#D97706" stroke-width="1.5"/>
+    </svg>`,
+
+  balloon: (chars) => `
+    <svg viewBox="0 0 180 260" width="180" height="260" style="animation:balloonSway 3s ease-in-out infinite">
+      <defs>
+        <radialGradient id="ballGrad" cx="0.4" cy="0.3" r="0.6"><stop offset="0%" stop-color="#FB923C"/><stop offset="100%" stop-color="#EA580C"/></radialGradient>
+      </defs>
+      <!-- Balloon -->
+      <ellipse cx="90" cy="80" rx="65" ry="78" fill="url(#ballGrad)" stroke="#C2410C" stroke-width="2"/>
+      <!-- Highlight -->
+      <ellipse cx="70" cy="60" rx="20" ry="30" fill="rgba(255,255,255,0.2)" transform="rotate(-15 70 60)"/>
+      <!-- Stripes -->
+      <path d="M50 40 Q90 120 55 155" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="8"/>
+      <path d="M90 5 Q90 130 90 158" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="6"/>
+      <!-- Ropes -->
+      <line x1="65" y1="155" x2="60" y2="195" stroke="#92400E" stroke-width="1.5"/>
+      <line x1="90" y1="158" x2="90" y2="195" stroke="#92400E" stroke-width="1.5"/>
+      <line x1="115" y1="155" x2="120" y2="195" stroke="#92400E" stroke-width="1.5"/>
+      <!-- Basket -->
+      <rect x="55" y="195" width="70" height="40" rx="6" fill="#92400E" stroke="#78350F" stroke-width="2"/>
+      <rect x="55" y="195" width="70" height="10" rx="4" fill="#A16207"/>
+      <!-- Characters -->
+      <text x="90" y="225" text-anchor="middle" font-size="18">${(chars||['⭐','⚡','🌱']).join('')}</text>
+    </svg>`
+};
+
+const DEST_SILHOUETTES = {
+  geology_lab: { emoji: '🪨', color: '#3B82F6', silhouette: '<svg viewBox="0 0 200 80" width="200" height="80"><path d="M0 80 L30 40 L50 55 L80 20 L110 50 L140 30 L170 45 L200 15 L200 80Z" fill="currentColor" opacity="0.3"/><circle cx="160" cy="25" r="8" fill="currentColor" opacity="0.2"/></svg>' },
+  kitchen: { emoji: '👨‍🍳', color: '#D97706', silhouette: '<svg viewBox="0 0 200 80" width="200" height="80"><rect x="20" y="30" width="60" height="50" rx="4" fill="currentColor" opacity="0.3"/><rect x="30" y="20" width="40" height="15" rx="8" fill="currentColor" opacity="0.2"/><rect x="120" y="40" width="50" height="40" rx="4" fill="currentColor" opacity="0.3"/><circle cx="145" cy="35" r="12" fill="currentColor" opacity="0.2"/></svg>' },
+  volcano_view: { emoji: '🌋', color: '#DC2626', silhouette: '<svg viewBox="0 0 200 80" width="200" height="80"><path d="M0 80 L60 80 L85 15 L100 25 L115 15 L140 80 L200 80Z" fill="currentColor" opacity="0.3"/><ellipse cx="100" cy="12" rx="15" ry="8" fill="currentColor" opacity="0.15"/></svg>' },
+  ocean_floor: { emoji: '🌊', color: '#0EA5E9', silhouette: '<svg viewBox="0 0 200 80" width="200" height="80"><path d="M0 60 Q25 40 50 60 Q75 80 100 60 Q125 40 150 60 Q175 80 200 60 L200 80 L0 80Z" fill="currentColor" opacity="0.3"/></svg>' },
+  outer_space: { emoji: '🚀', color: '#6366F1', silhouette: '<svg viewBox="0 0 200 80" width="200" height="80"><circle cx="40" cy="30" r="15" fill="currentColor" opacity="0.2"/><circle cx="140" cy="40" r="22" fill="currentColor" opacity="0.15"/><circle cx="170" cy="20" r="5" fill="currentColor" opacity="0.3"/></svg>' },
+  rainforest: { emoji: '🌿', color: '#16A34A', silhouette: '<svg viewBox="0 0 200 80" width="200" height="80"><path d="M0 80 L20 80 L20 30 Q30 10 40 30 L40 80 L70 80 L70 20 Q85 0 100 25 L100 80 L130 80 L130 35 Q140 15 150 35 L150 80 L200 80Z" fill="currentColor" opacity="0.3"/></svg>' },
+  clubhouse: { emoji: '🏠', color: '#FBBF24', silhouette: '<svg viewBox="0 0 200 80" width="200" height="80"><path d="M40 80 L40 40 L100 10 L160 40 L160 80Z" fill="currentColor" opacity="0.3"/><rect x="85" y="50" width="30" height="30" rx="2" fill="currentColor" opacity="0.2"/></svg>' },
+  default: { emoji: '✨', color: '#A855F7', silhouette: '' }
+};
+
+function getDestInfo(dest) {
+  return DEST_SILHOUETTES[dest] || DEST_SILHOUETTES.default;
+}
+
+function getVehicleType(scene) {
+  // Use travel_mode from AI if available, otherwise infer from destination
+  if (scene.travel_mode) return scene.travel_mode;
+  const dest = (scene.destination || '').toLowerCase();
+  if (dest.includes('ocean') || dest.includes('arctic') || dest.includes('underwater')) return 'submarine';
+  if (dest.includes('garden') || dest.includes('farm') || dest.includes('museum') || dest.includes('kitchen') || dest.includes('library')) return 'balloon';
+  return 'rocket';
+}
+
+function generateParticles(type) {
+  const particles = [];
+  const count = 12;
+  if (type === 'rocket') {
+    for (let i = 0; i < count; i++) {
+      const x = 35 + Math.random() * 30;
+      const delay = Math.random() * 2;
+      const size = 2 + Math.random() * 3;
+      particles.push('<div style="position:absolute;left:' + x + '%;top:55%;width:' + size + 'px;height:' + size + 'px;border-radius:50%;background:#FCD34D;animation:starTrail 1s ease-out ' + delay + 's infinite;opacity:0.7"></div>');
+    }
+  } else if (type === 'submarine') {
+    for (let i = 0; i < count; i++) {
+      const x = 20 + Math.random() * 60;
+      const delay = Math.random() * 3;
+      const size = 4 + Math.random() * 8;
+      particles.push('<div style="position:absolute;left:' + x + '%;top:' + (40 + Math.random()*40) + '%;width:' + size + 'px;height:' + size + 'px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.3);animation:bubbleRise 2.5s ease-out ' + delay + 's infinite"></div>');
+    }
+  } else { // balloon
+    for (let i = 0; i < 8; i++) {
+      const x = Math.random() * 100;
+      const y = Math.random() * 100;
+      const size = 1 + Math.random() * 2;
+      particles.push('<div style="position:absolute;left:' + x + '%;top:' + y + '%;width:' + size + 'px;height:' + size + 'px;border-radius:50%;background:white;opacity:' + (0.3 + Math.random()*0.5) + ';animation:twinkle ' + (2+Math.random()*3) + 's ease-in-out infinite"></div>');
+    }
+  }
+  return particles.join('');
+}
+
+function playFlipbook(scene, onDone) {
+  const vehicle = getVehicleType(scene);
+  const dest = scene.destination || '';
+  const destInfo = getDestInfo(dest);
+  const destGrad = getGrad(dest);
+  const chars = ['⭐', '⚡', '🌱'];
+  const vehicleSvg = VEHICLE_SVG[vehicle] ? VEHICLE_SVG[vehicle](chars) : VEHICLE_SVG.rocket(chars);
+  
+  const overlay = document.createElement('div');
+  overlay.className = 'flipbook-overlay';
+  overlay.id = 'flipbook';
+  
+  // Frame 1: Launch/departure (0-1.5s)
+  // Frame 2: Traveling with particles (1.5-3.5s)  
+  // Frame 3: Destination appears (3.5-5s)
+  // Frame 4: Postcard arrival label (5-6s)
+  
+  const startGrad = getGrad(state.bgKey);
+  
+  const launchAnim = vehicle === 'rocket' ? 'rocketLift 1.2s ease-out forwards' :
+                     vehicle === 'submarine' ? 'subDive 1.5s ease-in-out forwards' :
+                     'balloonFloat 1.5s ease-out forwards';
+  
+  const travelAnim = vehicle === 'rocket' ? 'rocketFly 1.5s ease-in forwards' :
+                     vehicle === 'submarine' ? 'subDive 2s ease-in-out infinite' :
+                     'balloonFloat 2s ease-in-out infinite';
+
+  overlay.innerHTML = [
+    // Frame 1: Launch
+    '<div class="flipbook-frame active" id="ff1" style="background:' + startGrad.bg + '">' +
+      '<div style="position:absolute;inset:0;background:rgba(0,0,0,0.2)"></div>' +
+      '<div class="flipbook-vehicle" style="animation:' + launchAnim + '">' + vehicleSvg + '</div>' +
+      '<div style="position:absolute;bottom:40px;font-size:22px;font-weight:800;color:white;font-family:Fredoka,sans-serif;text-shadow:0 2px 8px rgba(0,0,0,0.5);text-align:center;padding:0 20px">' + (scene.text||'') + '</div>' +
+    '</div>',
+    
+    // Frame 2: Traveling
+    '<div class="flipbook-frame" id="ff2" style="background:linear-gradient(180deg,' + startGrad.bg.replace('linear-gradient(135deg,','').split(')')[0] + ',#1E1B4B)">' +
+      '<div style="position:absolute;inset:0">' + generateParticles(vehicle) + '</div>' +
+      '<div class="flipbook-vehicle" style="animation:' + travelAnim + '">' + vehicleSvg + '</div>' +
+    '</div>',
+    
+    // Frame 3: Destination reveal
+    '<div class="flipbook-frame" id="ff3" style="background:' + destGrad.bg + '">' +
+      '<div style="position:absolute;inset:0;background:rgba(0,0,0,0.15)"></div>' +
+      '<div style="animation:destReveal 0.8s ease-out forwards;text-align:center">' +
+        '<div style="font-size:72px;margin-bottom:12px;animation:destGlow 2s ease-in-out infinite">' + destInfo.emoji + '</div>' +
+        '<div style="color:' + destInfo.color + ';position:relative">' + (destInfo.silhouette||'') + '</div>' +
+      '</div>' +
+      '<div style="position:absolute;bottom:60px;font-size:20px;font-weight:700;color:white;font-family:Fredoka,sans-serif;text-shadow:0 2px 8px rgba(0,0,0,0.5);background:rgba(0,0,0,0.3);padding:10px 28px;border-radius:50px;backdrop-filter:blur(4px)">Arriving...</div>' +
+    '</div>',
+    
+    // Frame 4: Postcard
+    '<div class="flipbook-frame" id="ff4" style="background:' + destGrad.bg + '">' +
+      '<div style="animation:postcardIn 0.6s ease-out forwards;background:rgba(255,255,255,0.95);border-radius:20px;padding:28px 32px;box-shadow:0 12px 40px rgba(0,0,0,0.25);text-align:center;max-width:320px">' +
+        '<div style="font-size:48px;margin-bottom:8px">' + destInfo.emoji + '</div>' +
+        '<div style="font-size:22px;font-weight:800;color:#1E293B;font-family:Fredoka,sans-serif;margin-bottom:4px">' + (dest.replace(/_/g,' ').replace(/\b\w/g,l=>l.toUpperCase())) + '</div>' +
+        '<div style="font-size:14px;color:#64748B;font-family:Fredoka,sans-serif">⭐ ⚡ 🌱 have arrived!</div>' +
+      '</div>' +
+    '</div>'
+  ].join('');
+  
+  document.body.appendChild(overlay);
+  
+  // Sequence the frames
+  const timings = [0, 1500, 3500, 5000];
+  const frames = ['ff1','ff2','ff3','ff4'];
+  
+  frames.forEach((fid, i) => {
+    if (i === 0) return; // first frame is already active
+    setTimeout(() => {
+      // Deactivate previous
+      const prev = document.getElementById(frames[i-1]);
+      if (prev) prev.classList.remove('active');
+      // Activate current
+      const cur = document.getElementById(fid);
+      if (cur) cur.classList.add('active');
+    }, timings[i]);
+  });
+  
+  // Remove overlay and continue
+  setTimeout(() => {
+    const el = document.getElementById('flipbook');
+    if (el) {
+      el.style.opacity = '0';
+      setTimeout(() => el.remove(), 400);
+    }
+    if (onDone) onDone();
+  }, 6000);
+}
 // Boot
 render();
 </script>

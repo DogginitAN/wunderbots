@@ -95,7 +95,7 @@ SCENE TYPES:
 - "dialogue": character, emotion, text. Optional: background (on location change), charactersPresent (on cast change)
 - "explanation": character, emotion, text, visual (references a visual ID from the outline)
 - "quiz": question, options [{text, correct, response}] — exactly 3 options, exactly 1 correct
-- "transition": destination, text (fun travel description)
+- "transition": destination, text (fun travel description), travel_mode (one of: "rocket", "submarine", "balloon" — pick based on destination: rocket for space/labs/volcanoes, submarine for ocean/arctic, balloon for kitchens/museums/gardens/farms)
 - "celebration": text
 
 Output ONLY valid JSON. No markdown, no code fences, no commentary.
