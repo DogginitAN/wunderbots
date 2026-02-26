@@ -374,7 +374,8 @@ function getCurrentScene() {
 function advance() {
   if (state.waitingQuiz || state.finished) return;
   clearTimeout(autoTimer);
-  stopAudio();
+  // DON'T stop audio here — let it finish naturally if still playing
+  // New scene audio will replace it in playSceneAudio
   const ep = state.episode;
   const act = ep.acts[state.actIdx];
 
@@ -403,10 +404,16 @@ function advance() {
 
   // Play audio for dialogue/explanation scenes
   if ((next.type === "dialogue" || next.type === "explanation")) {
-    if (ttsEnabled) playSceneAudio(state.actIdx, state.sceneIdx);
-    // Text timer as baseline — if audio plays, onended will clear and replace it
-    const len = (next.text||'').length;
-    autoTimer = setTimeout(advance, Math.max(3500, len * 75));
+    const key = sceneKey(state.actIdx, state.sceneIdx);
+    const hasAudio = ttsEnabled && audioCache.has(key);
+    if (hasAudio) {
+      // Audio exists — let it drive the pacing, no text timer
+      playSceneAudio(state.actIdx, state.sceneIdx);
+    } else {
+      // No audio — use text timer
+      const len = (next.text||'').length;
+      autoTimer = setTimeout(advance, Math.max(3500, len * 75));
+    }
   } else if (next.type === "transition") {
     autoTimer = setTimeout(advance, 3000);
   } else if (next.type !== "quiz" && next.type !== "celebration") {
