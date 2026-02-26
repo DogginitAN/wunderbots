@@ -1110,11 +1110,6 @@ function playFlipbook(scene, onDone) {
   overlay.className = 'flipbook-overlay';
   overlay.id = 'flipbook';
   
-  // Frame 1: Launch/departure (0-1.5s)
-  // Frame 2: Traveling with particles (1.5-3.5s)  
-  // Frame 3: Destination appears (3.5-5s)
-  // Frame 4: Postcard arrival label (5-6s)
-  
   const startGrad = getGrad(state.bgKey);
   
   const launchAnim = vehicle === 'rocket' ? 'rocketLift 1.2s ease-out forwards' :
@@ -1125,55 +1120,63 @@ function playFlipbook(scene, onDone) {
                      vehicle === 'submarine' ? 'subDive 2s ease-in-out infinite' :
                      'balloonFloat 2s ease-in-out infinite';
 
-  overlay.innerHTML = [
+  // Static background on overlay itself — no gaps between frames
+  // Starts with current location gradient, transitions to destination on frame 3
+  overlay.style.background = startGrad.bg;
+  overlay.style.transition = 'background 1s ease';
+
+  // Frames only contain CONTENT, not backgrounds — overlay bg is always visible
+  overlay.innerHTML = 
+    '<div style="position:absolute;inset:0;background:rgba(0,0,0,0.15);pointer-events:none" id="fb-dim"></div>' +
     // Frame 1: Launch
-    '<div class="flipbook-frame active" id="ff1" style="background:' + startGrad.bg + '">' +
-      '<div style="position:absolute;inset:0;background:rgba(0,0,0,0.2)"></div>' +
+    '<div class="flipbook-frame active" id="ff1">' +
       '<div class="flipbook-vehicle" style="animation:' + launchAnim + '">' + vehicleSvg + '</div>' +
       '<div style="position:absolute;bottom:40px;font-size:22px;font-weight:800;color:white;font-family:Fredoka,sans-serif;text-shadow:0 2px 8px rgba(0,0,0,0.5);text-align:center;padding:0 20px">' + (scene.text||'') + '</div>' +
-    '</div>',
+    '</div>' +
     
-    // Frame 2: Traveling
-    '<div class="flipbook-frame" id="ff2" style="background:linear-gradient(180deg,' + startGrad.bg.replace('linear-gradient(135deg,','').split(')')[0] + ',#1E1B4B)">' +
+    // Frame 2: Traveling (particles + vehicle)
+    '<div class="flipbook-frame" id="ff2">' +
       '<div style="position:absolute;inset:0">' + generateParticles(vehicle) + '</div>' +
       '<div class="flipbook-vehicle" style="animation:' + travelAnim + '">' + vehicleSvg + '</div>' +
-    '</div>',
+    '</div>' +
     
-    // Frame 3: Destination reveal
-    '<div class="flipbook-frame" id="ff3" style="background:' + destGrad.bg + '">' +
-      '<div style="position:absolute;inset:0;background:rgba(0,0,0,0.15)"></div>' +
+    // Frame 3: Destination reveal (emoji + silhouette)
+    '<div class="flipbook-frame" id="ff3">' +
       '<div style="animation:destReveal 0.8s ease-out forwards;text-align:center">' +
         '<div style="font-size:72px;margin-bottom:12px;animation:destGlow 2s ease-in-out infinite">' + destInfo.emoji + '</div>' +
         '<div style="color:' + destInfo.color + ';position:relative">' + (destInfo.silhouette||'') + '</div>' +
       '</div>' +
       '<div style="position:absolute;bottom:60px;font-size:20px;font-weight:700;color:white;font-family:Fredoka,sans-serif;text-shadow:0 2px 8px rgba(0,0,0,0.5);background:rgba(0,0,0,0.3);padding:10px 28px;border-radius:50px;backdrop-filter:blur(4px)">Arriving...</div>' +
-    '</div>',
+    '</div>' +
     
     // Frame 4: Postcard
-    '<div class="flipbook-frame" id="ff4" style="background:' + destGrad.bg + '">' +
+    '<div class="flipbook-frame" id="ff4">' +
       '<div style="animation:postcardIn 0.6s ease-out forwards;background:rgba(255,255,255,0.95);border-radius:20px;padding:28px 32px;box-shadow:0 12px 40px rgba(0,0,0,0.25);text-align:center;max-width:320px">' +
         '<div style="font-size:48px;margin-bottom:8px">' + destInfo.emoji + '</div>' +
         '<div style="font-size:22px;font-weight:800;color:#1E293B;font-family:Fredoka,sans-serif;margin-bottom:4px">' + (dest.replace(/_/g,' ').replace(/\b\w/g,l=>l.toUpperCase())) + '</div>' +
         '<div style="font-size:14px;color:#64748B;font-family:Fredoka,sans-serif">⭐ ⚡ 🌱 have arrived!</div>' +
       '</div>' +
-    '</div>'
-  ].join('');
+    '</div>';
   
   document.body.appendChild(overlay);
   
-  // Sequence the frames
+  // Sequence: show frame, hide previous — overlay bg stays solid throughout
   const timings = [0, 1500, 3500, 5000];
   const frames = ['ff1','ff2','ff3','ff4'];
   
   frames.forEach((fid, i) => {
-    if (i === 0) return; // first frame is already active
+    if (i === 0) return;
     setTimeout(() => {
-      // Deactivate previous
+      // Hide previous frame content
       const prev = document.getElementById(frames[i-1]);
       if (prev) prev.classList.remove('active');
-      // Activate current
+      // Show current frame content
       const cur = document.getElementById(fid);
       if (cur) cur.classList.add('active');
+      // On frame 3, transition the overlay background to destination
+      if (i === 2) {
+        overlay.style.background = destGrad.bg;
+      }
     }, timings[i]);
   });
   
