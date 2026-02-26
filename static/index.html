@@ -1192,15 +1192,40 @@ function playFlipbook(scene, onDone) {
     }, timings[i]);
   });
   
-  // Remove overlay and continue
+  // On the last frame, show a tap prompt — tapping dismisses AND provides
+  // a fresh user gesture that keeps Safari audio unlocked for upcoming scenes.
   setTimeout(() => {
+    const ff4 = document.getElementById('ff4');
+    if (ff4) {
+      // Add tap prompt to the postcard frame
+      const tap = document.createElement('div');
+      tap.style.cssText = 'position:absolute;bottom:24px;font-size:16px;font-weight:700;color:rgba(255,255,255,0.8);font-family:Fredoka,sans-serif;background:rgba(0,0,0,0.25);padding:10px 28px;border-radius:50px;backdrop-filter:blur(4px);animation:pulse 1.5s ease-in-out infinite;cursor:pointer';
+      tap.textContent = 'Tap to continue →';
+      ff4.appendChild(tap);
+    }
+    // Make the whole overlay tappable
     const el = document.getElementById('flipbook');
     if (el) {
-      el.style.opacity = '0';
-      setTimeout(() => el.remove(), 400);
+      el.style.cursor = 'pointer';
+      const dismiss = () => {
+        el.removeEventListener('click', dismiss);
+        el.removeEventListener('touchend', dismiss);
+        // This tap IS the user gesture — re-unlock audio for Safari
+        unlockAudio();
+        el.style.opacity = '0';
+        setTimeout(() => el.remove(), 300);
+        if (onDone) onDone();
+      };
+      el.addEventListener('click', dismiss);
+      el.addEventListener('touchend', dismiss);
+      // Auto-dismiss fallback after 4s if they don't tap (desktop, etc.)
+      setTimeout(() => {
+        if (document.getElementById('flipbook')) {
+          dismiss();
+        }
+      }, 4000);
     }
-    if (onDone) onDone();
-  }, 6000);
+  }, 5000);
 }
 // Boot
 render();
