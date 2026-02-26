@@ -30,7 +30,7 @@ GUIDE_VOICES = {
     # Nova — confident, warm, leader energy
     "nova": "EXAVITQu4vr4xnSDxMaL",    # "Bella" — young female, warm & clear
     # Bolt — energetic, playful, kid-like
-    "bolt": "TxGEqnHWrfWFTfGW9XjX",     # "Josh" — young male, upbeat & energetic
+    "bolt": "ocZQ262SsZb9RIxcQBOj",     # "Lulu Lollipop" — bubbly, high-pitched, energetic cartoon kid
     # Pip — soft, gentle, thoughtful
     "pip": "MF3mGyEYCl7XYWbV9V6O",       # "Elli" — soft female, gentle & kind
 }
