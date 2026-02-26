@@ -296,22 +296,61 @@ function renderLoading() {
 function renderPlayer() {
   const ep = state.episode;
   const grad = getGrad(state.bgKey);
-  const showTap = !state.waitingQuiz && !state.finished && getCurrentScene()?.type !== "transition" && getCurrentScene()?.type !== "celebration";
 
-  let scenesHtml = state.displayed.map((d,i) => renderScene(d.actIdx, d.sceneIdx, i === state.displayed.length-1)).join('');
+  // Only render the shell + first scene on initial call
+  const firstScene = state.displayed.length > 0 ? renderScene(state.displayed[0].actIdx, state.displayed[0].sceneIdx, state.displayed.length === 1) : '';
 
-  return `<div class="player" style="background:${grad.bg}">
-    <div class="player-bg" style="background:${grad.ov}"></div>
+  return `<div class="player" id="playerShell" style="background:${grad.bg}">
+    <div class="player-bg" id="playerBg" style="background:${grad.ov}"></div>
     <div class="player-banner" style="display:flex;align-items:center;justify-content:space-between">
       <div style="flex:1"></div>
       <div class="q" style="flex:4;text-align:center">✨ ${ep.question}</div>
       <div style="flex:1;text-align:right">
-        <button onclick="toggleSound()" style="background:none;border:none;font-size:20px;cursor:pointer;opacity:0.7">${ttsEnabled ? '🔊' : '🔇'}</button>
+        <button id="soundBtn" onclick="toggleSound()" style="background:none;border:none;font-size:20px;cursor:pointer;opacity:0.7">${ttsEnabled ? '🔊' : '🔇'}</button>
       </div>
     </div>
-    <div class="scene-stream" id="scroller">${scenesHtml}</div>
-    ${showTap ? `<div class="tap-bar" onclick="advance()"><span>Tap to continue →</span></div>` : ''}
+    <div class="scene-stream" id="scroller">${firstScene}</div>
+    <div class="tap-bar" id="tapBar" onclick="advance()"><span>Tap to continue →</span></div>
   </div>`;
+}
+
+// Append a single new scene to the existing scroller (no full re-render)
+function appendScene(actIdx, sceneIdx) {
+  const scroller = document.getElementById('scroller');
+  if (!scroller) return;
+
+  // Mark previous latest as past
+  const prevLatest = scroller.querySelector('.dialogue-row.latest');
+  if (prevLatest) {
+    prevLatest.classList.remove('latest');
+    prevLatest.classList.add('past');
+    // Stop speaking animation on previous avatar
+    const prevAvatar = prevLatest.querySelector('.avatar.speaking');
+    if (prevAvatar) prevAvatar.classList.remove('speaking');
+  }
+
+  const sceneHtml = renderScene(actIdx, sceneIdx, true);
+  const wrapper = document.createElement('div');
+  wrapper.innerHTML = sceneHtml;
+  while (wrapper.firstChild) scroller.appendChild(wrapper.firstChild);
+
+  updatePlayerChrome();
+  scrollBottom();
+}
+
+// Update background gradient and tap bar without full re-render
+function updatePlayerChrome() {
+  const grad = getGrad(state.bgKey);
+  const shell = document.getElementById('playerShell');
+  const bg = document.getElementById('playerBg');
+  const tapBar = document.getElementById('tapBar');
+  const scene = getCurrentScene();
+  
+  if (shell) shell.style.background = grad.bg;
+  if (bg) bg.style.background = grad.ov;
+  
+  const showTap = !state.waitingQuiz && !state.finished && scene?.type !== "transition" && scene?.type !== "celebration";
+  if (tapBar) tapBar.style.display = showTap ? '' : 'none';
 }
 
 function renderScene(aI, sI, isLatest) {
@@ -391,7 +430,7 @@ async function advance() {
     state.sceneIdx = 0;
   } else {
     state.finished = true;
-    render();
+    updatePlayerChrome();
     return;
   }
 
@@ -433,8 +472,8 @@ async function advance() {
   const typing = document.getElementById('typing');
   if (typing) typing.remove();
 
-  render();
-  scrollBottom();
+  // Append just the new scene — no full re-render
+  appendScene(state.actIdx, state.sceneIdx);
 
   // Play audio for dialogue/explanation scenes
   if ((next.type === "dialogue" || next.type === "explanation")) {
@@ -573,12 +612,15 @@ async function startEpisode(episode) {
   state.screen = "playing";
   render();
 
-  // Play first scene
-  if (ttsEnabled) playSceneAudio(0, 0);
-
-  // Text timer as fallback
-  const len = (first?.text||'').length;
-  autoTimer = setTimeout(advance, Math.max(4000, len * 80));
+  // Play first scene — audio drives pacing if available
+  const firstKey = sceneKey(0, 0);
+  if (ttsEnabled && audioCache.has(firstKey)) {
+    playSceneAudio(0, 0);
+    // No text timer — onended will advance
+  } else {
+    const len = (first?.text||'').length;
+    autoTimer = setTimeout(advance, Math.max(4000, len * 80));
+  }
 }
 
 // iOS requires a user gesture to unlock audio playback.
