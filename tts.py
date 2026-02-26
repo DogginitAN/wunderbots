@@ -28,7 +28,7 @@ MODEL_ID = "eleven_flash_v2_5"  # Fast, cheap (0.5 credits/char on Starter+)
 
 GUIDE_VOICES = {
     # Nova — confident, warm, leader energy
-    "nova": "iukn3a1vSSNFmdi5NZS4",     # "Paula Paw" — heroic, adventurous, expressive cartoon lead
+    "nova": "rRiIQLylyhtZZrjx61F1",     # Custom — curious adventurous young girl, warm leader energy
     # Bolt — energetic, playful, kid-like
     "bolt": "2f1b6Q2ICKpLzWrEEYVE",     # Custom voice — energetic goofy cartoon boy, lovable sidekick
     # Pip — soft, gentle, thoughtful
