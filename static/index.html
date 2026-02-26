@@ -568,12 +568,7 @@ function scrollBottom() {
   requestAnimationFrame(() => {
     const el = document.getElementById('scroller');
     if (!el) return;
-    // Only scroll if we're near the bottom already (within 300px)
-    // This prevents jarring jumps if user scrolled up to re-read
-    const nearBottom = (el.scrollHeight - el.scrollTop - el.clientHeight) < 400;
-    if (nearBottom) {
-      el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
-    }
+    el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
   });
 }
 
