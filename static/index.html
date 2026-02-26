@@ -11,7 +11,12 @@
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 body { font-family:'Fredoka',sans-serif; overflow:hidden; height:100vh; height:100dvh; }
 @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
-@keyframes slideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+@keyframes slideUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+@keyframes typing { 0%{opacity:0.3} 50%{opacity:1} 100%{opacity:0.3} }
+.typing-indicator { display:flex;gap:5px;padding:8px 20px;align-items:center; }
+.typing-indicator .dot { width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.5);animation:typing 1.2s ease-in-out infinite; }
+.typing-indicator .dot:nth-child(2) { animation-delay:0.2s; }
+.typing-indicator .dot:nth-child(3) { animation-delay:0.4s; }
 @keyframes slideDown { from{opacity:0;transform:translateY(-10px)} to{opacity:1;transform:translateY(0)} }
 @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
 @keyframes starPop { from{opacity:0;transform:scale(0) rotate(-20deg)} to{opacity:1;transform:scale(1) rotate(0deg)} }
@@ -58,7 +63,7 @@ body { font-family:'Fredoka',sans-serif; overflow:hidden; height:100vh; height:1
 .act-header .pill span { font-size:14px;font-weight:700;color:rgba(255,255,255,0.8);letter-spacing:1px; }
 
 .dialogue-row { display:flex;gap:14px;padding:10px 20px;align-items:flex-start; }
-.dialogue-row.latest { animation:slideUp 0.4s ease-out; }
+.dialogue-row.latest { animation:slideUp 0.5s ease-out; }
 .dialogue-row.past { opacity:0.85; }
 
 .avatar { border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;border:3px solid white;transition:all 0.3s ease; }
@@ -371,7 +376,7 @@ function getCurrentScene() {
   return state.episode.acts[state.actIdx]?.scenes[state.sceneIdx];
 }
 
-function advance() {
+async function advance() {
   if (state.waitingQuiz || state.finished) return;
   clearTimeout(autoTimer);
   // DON'T stop audio here — let it finish naturally if still playing
@@ -398,6 +403,35 @@ function advance() {
   if (next.destination && GRADIENTS[next.destination]) state.bgKey = next.destination;
 
   if (next.type === "quiz") state.waitingQuiz = true;
+
+  // Show typing indicator briefly before revealing the message
+  if (next.type === "dialogue" || next.type === "explanation") {
+    const char = next.character ? state.episode.characters[next.character] : null;
+    if (char) {
+      const scroller = document.getElementById('scroller');
+      if (scroller) {
+        const indicator = document.createElement('div');
+        indicator.className = 'typing-indicator';
+        indicator.id = 'typing';
+        indicator.innerHTML = `
+          <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,${char.color},${char.accentColor});display:flex;align-items:center;justify-content:center;border:2px solid white;flex-shrink:0">
+            <span style="font-size:12px">${char.emoji}</span>
+          </div>
+          <div style="background:rgba(255,255,255,0.7);border-radius:12px;padding:8px 14px;display:flex;gap:5px">
+            <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+          </div>`;
+        scroller.appendChild(indicator);
+        scrollBottom();
+      }
+    }
+  }
+
+  // Brief pause for typing indicator, then show actual message
+  await new Promise(r => setTimeout(r, next.type === "dialogue" || next.type === "explanation" ? 400 : 0));
+  
+  // Remove typing indicator
+  const typing = document.getElementById('typing');
+  if (typing) typing.remove();
 
   render();
   scrollBottom();
@@ -460,7 +494,7 @@ function scrollBottom() {
   setTimeout(() => {
     const el = document.getElementById('scroller');
     if (el) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
-  }, 100);
+  }, 250);
 }
 
 // ─── NAVIGATION ─────────────────────────────────────────────────────────────
