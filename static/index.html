@@ -931,21 +931,21 @@ function renderLibrary() {
 }
 
 async function playLibraryEpisode(slug) {
-  // Show loading
-  document.getElementById('home').style.display = 'none';
-  document.getElementById('loading').style.display = 'flex';
-  document.getElementById('load-status').textContent = 'Loading saved episode...';
-  
+  state.screen = "loading";
+  render();
+
   try {
+    const statusEl = document.getElementById('load-status');
+    if (statusEl) statusEl.textContent = 'Loading saved episode...';
+
     const res = await fetch('/api/library/' + slug);
     if (!res.ok) throw new Error('Episode not found');
     const episode = await res.json();
     await startEpisode(episode);
   } catch (e) {
     console.error('Library play error:', e);
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('home').style.display = 'flex';
     alert('Could not load episode — try again!');
+    goHome();
   }
 }
 
