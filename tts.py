@@ -55,7 +55,7 @@ EXPERT_VOICE_POOL = EXPERT_VOICES_FEMALE + EXPERT_VOICES_MALE
 
 # Narrator / VJ voice — reads transitions, act headers, celebration
 # Should sound like an exciting kids' show announcer
-NARRATOR_VOICE = "MDLAMJ0jxkpYkjXbmG4t"  # PLACEHOLDER — replace with custom narrator voice
+NARRATOR_VOICE = "CeNX9CMwmxDxUF5Q2Inm"  # Custom — exciting kids show announcer, warm and punchy
 
 # ─── Emotion → voice settings + stage directions ─────────────────────────────
 # ElevenLabs reads emotion from textual cues. We prepend stage directions
