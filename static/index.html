@@ -205,15 +205,12 @@ async function generateAllAudio(episode, onProgress) {
 }
 
 function playSceneAudio(actIdx, sceneIdx) {
-  console.log('[AUDIO] playSceneAudio called:', actIdx, sceneIdx, 'ttsEnabled:', ttsEnabled);
   if (!ttsEnabled) { console.log('[AUDIO] TTS disabled, skipping'); return; }
   if (currentAudio) { 
-    console.log('[AUDIO] Stopping previous audio');
-    currentAudio.pause(); currentAudio = null; 
+      currentAudio.pause(); currentAudio = null; 
   }
   const key = sceneKey(actIdx, sceneIdx);
   const url = audioCache.get(key);
-  console.log('[AUDIO] Key:', key, 'Has URL:', !!url, 'Cache size:', audioCache.size);
   if (!url) { console.log('[AUDIO] No audio in cache for', key); return; }
 
   // Get text length for fallback timing
@@ -247,8 +244,7 @@ function playSceneAudio(actIdx, sceneIdx) {
   };
 
   currentAudio.play().then(() => {
-    console.log('[AUDIO] Playing:', key);
-  }).catch(e => {
+    }).catch(e => {
     console.warn('[AUDIO] Play BLOCKED:', key, e.message);
     // Fallback timer already set, will handle advance
   });
@@ -449,7 +445,6 @@ function getCurrentScene() {
 }
 
 async function advance() {
-  console.log('[ADVANCE] Called. actIdx:', state.actIdx, 'sceneIdx:', state.sceneIdx, 'waitingQuiz:', state.waitingQuiz);
   if (state.waitingQuiz || state.finished) { console.log('[ADVANCE] Blocked (quiz/finished)'); return; }
   clearTimeout(autoTimer);
   // DON'T stop audio here — let it finish naturally if still playing
@@ -469,7 +464,6 @@ async function advance() {
   }
 
   const next = ep.acts[state.actIdx].scenes[state.sceneIdx];
-  console.log('[ADVANCE] Next scene:', state.actIdx, state.sceneIdx, 'type:', next.type, 'char:', next.character || 'none');
   state.displayed.push({ actIdx: state.actIdx, sceneIdx: state.sceneIdx });
 
   // Update background
