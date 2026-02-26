@@ -37,12 +37,16 @@ GUIDE_VOICES = {
 
 # Pool of voices for rotating experts (each episode gets different experts)
 EXPERT_VOICE_POOL = [
-    "pNInz6obpgDQGcFmaJgB",   # "Adam" — deep male, authoritative
-    "21m00Tcm4TlvDq8ikWAM",   # "Rachel" — professional female
-    "yoZ06aMxZJJ28mfd3POQ",   # "Sam" — friendly male
-    "jBpfuIE2acCO8z3wKNLl",   # "Gigi" — animated female
-    "VR6AewLTigWG4xSOukaG",   # "Arnold" — strong male
-    "ThT5KcBeYPX3keUQqHPh",   # "Dorothy" — warm older female
+    # Female experts
+    "67oeJmj7jIMsdE6yXPr5",   # Custom F1 — warm mentor, Ms. Frizzle energy
+    "ZT9u07TYPVl83ejeLakq",   # Custom F2 — cool calm scientist
+    "y5LC9pxhb6k0W8IrQUXS",   # Custom F3 — energetic adventurer
+    "0rEo3eAjssGDUCXHYENf",   # Custom F4 — gentle grandmother storyteller
+    # Male experts
+    "MDLAMJ0jxkpYkjXbmG4t",   # Custom M1 — booming enthusiast, jolly and dramatic
+    "g2W4HAjKvdW93AmsjsOx",   # Custom M2 — nerdy professor, quick-talking and fascinated
+    "Fz7HYdHHCP1EF1FLn46C",   # Custom M3 — laid-back guide, smooth and chill
+    "n1PvBOwxb8X6m7tahp2h",   # Custom M4 — dramatic storyteller, theatrical and epic
 ]
 
 # ─── Emotion → voice settings + stage directions ─────────────────────────────
