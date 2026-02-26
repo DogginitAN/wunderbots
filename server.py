@@ -10,7 +10,7 @@ from starlette.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
 from openai import OpenAI
 from prompts import STAGE_1_SYSTEM, STAGE_1_USER, STAGE_2_SYSTEM, STAGE_2_USER
-from tts import build_expert_voice_map, generate_speech, EMOTION_DIRECTIONS
+from tts import build_expert_voice_map, generate_speech, NARRATOR_VOICE, EMOTION_DIRECTIONS
 import re
 import glob
 
@@ -304,8 +304,10 @@ async def api_tts_batch(request):
         scenes_to_generate = []
         for ai, act in enumerate(episode["acts"]):
             for si, scene in enumerate(act.get("scenes", [])):
-                if scene.get("type") in ("dialogue", "explanation") and scene.get("text"):
-                    key = f"{ai}-{si}"
+                scene_type = scene.get("type", "")
+                key = f"{ai}-{si}"
+                
+                if scene_type in ("dialogue", "explanation") and scene.get("text"):
                     char_id = scene.get("character", "")
                     voice_id = voice_map.get(char_id, "pNInz6obpgDQGcFmaJgB")
                     emotion = scene.get("emotion", "neutral")
@@ -315,6 +317,24 @@ async def api_tts_batch(request):
                         "voice": voice_id,
                         "emotion": emotion,
                         "character": char_id,
+                    })
+                elif scene_type == "transition" and scene.get("text"):
+                    # Narrator reads transition announcements
+                    scenes_to_generate.append({
+                        "key": key,
+                        "text": scene["text"],
+                        "voice": NARRATOR_VOICE,
+                        "emotion": "excited",
+                        "character": "narrator",
+                    })
+                elif scene_type == "celebration" and scene.get("text"):
+                    # Narrator reads the celebration
+                    scenes_to_generate.append({
+                        "key": key,
+                        "text": scene["text"],
+                        "voice": NARRATOR_VOICE,
+                        "emotion": "excited",
+                        "character": "narrator",
                     })
         
         log.info(f"Batch TTS: generating {len(scenes_to_generate)} scenes")

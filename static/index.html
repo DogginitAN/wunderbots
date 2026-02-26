@@ -566,7 +566,13 @@ async function advance() {
       if (!state.waitingQuiz && !state.finished) advance();
     });
     return; // playFlipbook handles timing
-  } else if (next.type !== "quiz" && next.type !== "celebration") {
+  } else if (next.type === "celebration") {
+    // Play narrator audio for celebration
+    const celKey = sceneKey(state.actIdx, state.sceneIdx);
+    if (ttsEnabled && audioCache.has(celKey)) {
+      playSceneAudio(state.actIdx, state.sceneIdx);
+    }
+  } else if (next.type !== "quiz") {
     const len = (next.text||'').length;
     autoTimer = setTimeout(advance, Math.max(3000, len * 70));
   }
@@ -1171,6 +1177,17 @@ function playFlipbook(scene, onDone) {
     '</div>';
   
   document.body.appendChild(overlay);
+  
+  // Play narrator audio for this transition scene
+  const transKey = sceneKey(state.actIdx, state.sceneIdx);
+  if (ttsEnabled && audioCache.has(transKey)) {
+    persistentAudio.pause();
+    currentSceneKey = transKey;
+    persistentAudio.src = audioCache.get(transKey);
+    persistentAudio.play().then(() => {
+      console.log('[AUDIO] Narrator playing transition:', transKey);
+    }).catch(e => console.warn('[AUDIO] Transition play blocked:', e.message));
+  }
   
   // Sequence: show frame, hide previous — overlay bg stays solid throughout
   const timings = [0, 1500, 3500, 5000];
