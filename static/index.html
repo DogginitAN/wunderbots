@@ -567,7 +567,10 @@ async function advance() {
     });
     return; // playFlipbook handles timing
   } else if (next.type === "celebration") {
-    // Play narrator audio for celebration
+    // Episode is done! Mark finished so onended doesn't trigger advance()
+    state.finished = true;
+    updatePlayerChrome();
+    // Play narrator audio — but since finished=true, onended won't advance
     const celKey = sceneKey(state.actIdx, state.sceneIdx);
     if (ttsEnabled && audioCache.has(celKey)) {
       playSceneAudio(state.actIdx, state.sceneIdx);
