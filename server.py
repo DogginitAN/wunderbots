@@ -11,7 +11,7 @@ from starlette.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
 from openai import OpenAI
 from prompts import STAGE_1_SYSTEM, STAGE_1_USER, STAGE_2_SYSTEM, STAGE_2_USER
-from tts import build_expert_voice_map, generate_speech, NARRATOR_VOICE, EMOTION_DIRECTIONS
+from tts import build_expert_voice_map, generate_speech, NARRATOR_VOICE, PROCTOR_VOICE, EMOTION_DIRECTIONS
 import re
 import glob
 
@@ -336,9 +336,9 @@ async def api_tts_batch(request):
                     scenes_to_generate.append({
                         "key": key,
                         "text": quiz_script,
-                        "voice": NARRATOR_VOICE,
-                        "emotion": "excited",
-                        "character": "narrator",
+                        "voice": PROCTOR_VOICE,
+                        "emotion": "neutral",
+                        "character": "proctor",
                     })
                 elif scene_type == "transition" and scene.get("text"):
                     # Narrator reads transition announcements
