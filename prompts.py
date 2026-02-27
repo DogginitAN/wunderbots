@@ -11,8 +11,9 @@ Your outline must:
 1. IDENTIFY THE REAL ANSWER
    - What is the actual scientific/factual answer to this question?
    - Break it into 2-3 key concepts that build on each other
-   - Each concept should have both a child-friendly analogy AND the real terminology
-   - Include one "and here's the cool part" advanced detail per concept
+   - Each concept should have a child-friendly analogy as the PRIMARY explanation
+   - Include ONE real science word per concept (just one! e.g. "magma" or "oxygen") — the rest should be everyday language
+   - Include one "and here's the cool part" surprising detail per concept that rewards an attentive adult
 
 2. DESIGN THE EXPERTS (2 per episode)
    - Each expert approaches the question from a different angle
@@ -48,9 +49,10 @@ STAGE_1_USER = """A child has asked: "{question}"
 
 Create the episode outline. Remember:
 - The answer must be factually accurate
-- Include real scientific terminology alongside child-friendly explanations
-- The episode should be entertaining for both the child AND an adult watching together
-- Aim for depth — don't oversimplify. Trust the child's intelligence.
+- ONE real science word per concept maximum — the rest should be everyday words a 4-year-old knows
+- The child-friendly analogy is the MAIN explanation. The science word is a bonus, not the focus.
+- Adults are entertained by surprising connections and "whoa I didn't know that" facts, NOT by vocabulary
+- Trust the child's intelligence to understand IDEAS, but don't overload them with WORDS
 - The narrative should build understanding progressively: concept 1 → concept 2 → concept 3"""
 
 
@@ -75,13 +77,19 @@ CRITICAL FORMATTING RULES:
 
 WRITING GUIDELINES:
 1. Every line advances understanding or develops character. No filler like "That's so cool!" alone.
-2. Introduce real vocabulary naturally. Layer: simple analogy → real term → deeper detail.
-3. Include at least one fact that would surprise an adult.
-4. Bolt should make at least 3 genuinely funny wrong guesses — each one DIFFERENT in style.
-5. Pip should have at least 1 moment connecting two concepts that surprises everyone.
-6. Nova should ask at least 2 follow-up "but WHY" questions that deepen understanding.
-7. Experts should have DISTINCT personalities that come through in how they speak.
-8. Use analogies from a child's daily life: butter melting, flashlights, crayons, garden hoses, etc.
+2. ONE science word per concept, MAX. Introduce it once, celebrate it, then go back to normal words.
+   BAD: "The gill filaments use counter-current exchange via lamellae for oxygen diffusion"
+   GOOD: "Fish have these tiny things called GILLS — they work like a super-powered filter that grabs the oxygen right out of the water!"
+3. NEVER stack multiple technical terms in one sentence. If a sentence has one big word, every other word should be simple.
+4. Adults stay engaged through SURPRISING FACTS and CLEVER CONNECTIONS, not terminology.
+5. The analogy IS the explanation. The science word is a fun bonus the child can remember, like a souvenir.
+6. Bolt should make at least 3 genuinely funny wrong guesses — each one DIFFERENT in style.
+7. Pip should have at least 1 moment connecting two concepts that surprises everyone.
+8. Nova should ask at least 2 follow-up "but WHY" questions that deepen understanding.
+9. Experts should have DISTINCT personalities that come through in how they speak.
+10. Use analogies from a child's daily life: butter melting, flashlights, crayons, garden hoses, etc.
+11. Keep sentences SHORT. A 4-year-old is listening. If a sentence has a comma, it's probably too long.
+12. After any explanation, have a character react with wonder or humor BEFORE the next explanation. Never stack two explanations back-to-back.
 
 STRUCTURE:
 - Act 1 (The Question): 5-7 scenes. Fun opening, question arrives, excitement, departure.
@@ -135,7 +143,9 @@ Requirements:
 - Bolt should make at least 3 genuinely funny wrong guesses (each a DIFFERENT kind of joke)
 - Pip should have at least 1 moment where she quietly connects two concepts
 - Nova should ask at least 2 follow-up questions that deepen understanding
-- Include real scientific vocabulary with natural explanations
+- ONE science word per concept max — surrounded by simple everyday language
+- Keep dialogue punchy and short — a 4-year-old is the primary audience
+- After every explanation beat, follow with a character REACTING (humor, wonder, a question) before the next explanation
 - The final act should clearly restate the answer in a way that sticks
 
 Output ONLY valid JSON. No markdown, no commentary, no code fences."""
