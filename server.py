@@ -1,6 +1,7 @@
 """Wunderbots server — Starlette + Groq"""
 import os
 import json
+import random
 import time
 import logging
 from starlette.applications import Starlette
@@ -150,6 +151,12 @@ async def api_generate(request):
         
         # Save to library for free replay
         save_episode(episode)
+        
+        # Shuffle quiz answer positions so correct isn't always first
+        for act in episode.get("acts", []):
+            for scene in act.get("scenes", []):
+                if scene.get("type") == "quiz" and scene.get("options"):
+                    random.shuffle(scene["options"])
         
         return JSONResponse(episode)
 
@@ -317,6 +324,21 @@ async def api_tts_batch(request):
                         "voice": voice_id,
                         "emotion": emotion,
                         "character": char_id,
+                    })
+                elif scene_type == "quiz" and scene.get("question"):
+                    # Proctor reads the question and A/B/C options
+                    labels = ["A", "B", "C"]
+                    opts_text = ". ".join(
+                        f"{labels[i]}: {o['text']}" 
+                        for i, o in enumerate(scene.get("options", []))
+                    )
+                    quiz_script = f"{scene['question']}... {opts_text}"
+                    scenes_to_generate.append({
+                        "key": key,
+                        "text": quiz_script,
+                        "voice": NARRATOR_VOICE,
+                        "emotion": "excited",
+                        "character": "narrator",
                     })
                 elif scene_type == "transition" and scene.get("text"):
                     # Narrator reads transition announcements

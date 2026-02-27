@@ -86,9 +86,10 @@ body { font-family:'Fredoka',sans-serif; overflow:hidden; height:100vh; height:1
 .quiz { background:rgba(255,255,255,0.95);border-radius:24px;padding:28px 24px;margin:16px;box-shadow:0 8px 32px rgba(0,0,0,0.12);border:3px solid #FCD34D;animation:slideUp 0.4s ease-out; }
 .quiz .prompt { text-align:center;margin-bottom:20px; }
 .quiz .prompt .emoji { font-size:28px;margin-bottom:8px; }
-.quiz .prompt .question { font-size:20px;font-weight:700;color:#1E293B; }
+.quiz .prompt .question { font-size:22px;font-weight:700;color:#1E293B;line-height:1.4; }
 .quiz .options { display:flex;flex-direction:column;gap:12px; }
-.quiz .opt-btn { padding:16px 20px;border-radius:16px;border:2.5px solid #E2E8F0;background:white;cursor:pointer;font-size:18px;font-weight:600;text-align:left;font-family:'Fredoka',sans-serif;color:#1E293B;transition:all 0.2s ease;box-shadow:0 2px 8px rgba(0,0,0,0.06); }
+.quiz .opt-btn { padding:16px 20px;border-radius:16px;border:2.5px solid #E2E8F0;background:white;cursor:pointer;font-size:20px;font-weight:600;text-align:left;font-family:'Fredoka',sans-serif;color:#1E293B;transition:all 0.2s ease;box-shadow:0 2px 8px rgba(0,0,0,0.06);display:flex;align-items:center;gap:12px; }
+.quiz .opt-letter { display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#7C3AED,#2563EB);color:white;font-size:18px;font-weight:800;flex-shrink:0; }
 .quiz .opt-btn.correct { background:#D1FAE5;border-color:#10B981;box-shadow:0 4px 16px rgba(16,185,129,0.2); }
 .quiz .opt-btn.wrong { background:#FEE2E2;border-color:#EF4444;box-shadow:0 4px 16px rgba(239,68,68,0.2); }
 .quiz .opt-btn.reveal-correct { background:#D1FAE5;border-color:rgba(16,185,129,0.4); }
@@ -461,10 +462,11 @@ function renderScene(aI, sI, isLatest) {
 
   if (scene.type === "quiz") {
     const qid = `quiz-${aI}-${sI}`;
+    const labels = ['A', 'B', 'C'];
     html += `<div class="quiz" id="${qid}">
       <div class="prompt"><div class="emoji">🤔</div><div class="question">${scene.question}</div></div>
       <div class="options">
-        ${scene.options.map((o,i) => `<button class="opt-btn" data-qi="${qid}" data-oi="${i}" data-correct="${o.correct}" onclick="handleQuiz(this)">${o.text}</button>`).join('')}
+        ${scene.options.map((o,i) => `<button class="opt-btn" data-qi="${qid}" data-oi="${i}" data-correct="${o.correct}" onclick="handleQuiz(this)"><span class="opt-letter">${labels[i]}</span> ${o.text}</button>`).join('')}
       </div>
     </div>`;
   }
@@ -514,7 +516,14 @@ async function advance() {
   if (next.background && GRADIENTS[next.background]) state.bgKey = next.background;
   if (next.destination && GRADIENTS[next.destination]) state.bgKey = next.destination;
 
-  if (next.type === "quiz") state.waitingQuiz = true;
+  if (next.type === "quiz") {
+    state.waitingQuiz = true;
+    // Play proctor reading the question + options
+    const quizKey = sceneKey(state.actIdx, state.sceneIdx);
+    if (ttsEnabled && audioCache.has(quizKey)) {
+      playSceneAudio(state.actIdx, state.sceneIdx);
+    }
+  }
 
   // Show typing indicator briefly before revealing the message
   if (next.type === "dialogue" || next.type === "explanation") {

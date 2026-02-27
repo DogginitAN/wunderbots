@@ -128,6 +128,7 @@ Requirements:
 - EVERY expert from the outline MUST appear in the "characters" object with role "expert" and a "gender" field ("female" or "male")
 - ONLY use these emotions: neutral, excited, thinking, surprised, happy, explaining, silly, shy
 - Include all quiz checkpoints from the outline (3 quizzes, each with exactly 3 options)
+- IMPORTANT: Randomize the position of the correct answer — do NOT always put it first. Vary across quizzes.
 - Reference all key visuals from the outline using their IDs
 - Write dialogue that is entertaining for a 5-year-old AND an adult watching together
 - Target 35-45 total scenes across all acts
