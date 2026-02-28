@@ -475,15 +475,18 @@ function renderScene(aI, sI, isLatest) {
   if (scene.type === "celebration") {
     const ep = state.episode;
     const isLastAct = aI === ep.acts.length - 1;
-    if (isLastAct && isLatest) {
-    html += `<div class="celebration">
-      <div class="big-emoji">🎉</div>
-      <div class="msg">${scene.text||'You did it!'}</div>
-      <div class="stars">${['⭐','🏆','⭐'].map((e,i) => `<span style="animation:starPop 0.4s ease-out ${i*0.15}s both">${e}</span>`).join('')}</div>
-      <button class="again-btn" onclick="goHome()">Ask Another Question! 🎤</button>
-    </div>`;
-    } else if (!isLastAct) {
-      // Mid-episode celebration — render as a simple highlighted message
+    const actScenes = ep.acts[aI].scenes;
+    const isNearEnd = sI >= actScenes.length - 2;
+    if (isLastAct && isNearEnd && isLatest) {
+      // Final celebration — full UI with replay button
+      html += `<div class="celebration">
+        <div class="big-emoji">🎉</div>
+        <div class="msg">${scene.text||'You did it!'}</div>
+        <div class="stars">${['⭐','🏆','⭐'].map((e,i) => `<span style="animation:starPop 0.4s ease-out ${i*0.15}s both">${e}</span>`).join('')}</div>
+        <button class="again-btn" onclick="goHome()">Ask Another Question! 🎤</button>
+      </div>`;
+    } else {
+      // Mid-episode or early celebration — render as highlighted text
       const celCls = isLatest ? 'latest' : 'past';
       html += '<div class="dialogue-row ' + celCls + '">' +
         '<div style="text-align:center;padding:16px 20px;width:100%">' +
@@ -595,7 +598,9 @@ async function advance() {
     // Only finish if this celebration is in the LAST act
     // (AI sometimes generates celebration-type scenes mid-episode)
     const isLastAct = state.actIdx === ep.acts.length - 1;
-    if (isLastAct) {
+    const lastAct = ep.acts[state.actIdx];
+    const isLastScene = state.sceneIdx >= lastAct.scenes.length - 2; // last or second-to-last
+    if (isLastAct && isLastScene) {
       state.finished = true;
       updatePlayerChrome();
       // Play narrator audio — since finished=true, onended won't advance
