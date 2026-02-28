@@ -104,7 +104,7 @@ SCENE TYPES:
 - "explanation": character, emotion, text, visual (references a visual ID from the outline)
 - "quiz": question, options [{text, correct, response}] — exactly 3 options, exactly 1 correct
 - "transition": destination, text (fun travel description), travel_mode (one of: "rocket", "submarine", "balloon" — pick based on destination: rocket for space/labs/volcanoes, submarine for ocean/arctic, balloon for kitchens/museums/gardens/farms)
-- "celebration": text
+- "celebration": text — ONLY ONE, ONLY as the VERY LAST scene of Act 5. Never in any other act.
 
 Output ONLY valid JSON. No markdown, no code fences, no commentary.
 
