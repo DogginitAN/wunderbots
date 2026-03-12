@@ -32,6 +32,7 @@ Your outline must:
    - Test understanding, not just recall
    - Wrong answer responses should gently redirect WITHOUT making the child feel bad
    - Correct answer responses should reinforce the concept with slightly different words
+   - ANSWER POSITION: Quiz 1 → correct answer FIRST (index 0). Quiz 2 → correct answer SECOND (index 1). Quiz 3 → correct answer THIRD (index 2). This ensures variety.
 
 5. PLAN KEY VISUALS (2-3 diagrams)
    - Give each a short snake_case ID like "light_spectrum" or "scattering_diagram"
@@ -88,8 +89,12 @@ WRITING GUIDELINES:
 4. Adults stay engaged through SURPRISING FACTS and CLEVER CONNECTIONS, not terminology.
 5. The analogy IS the explanation. The science word is a fun bonus the child can remember, like a souvenir.
 6. Bolt should make at least 3 genuinely funny wrong guesses — each one DIFFERENT in style.
+   Use the "silly" emotion. Examples: "Maybe it's because the clouds are sneezing?" / "I bet tiny invisible painters do it!" / "What if it's just the sky being grumpy?"
 7. Pip should have at least 1 moment connecting two concepts that surprises everyone.
-8. Nova should ask at least 2 follow-up "but WHY" questions that deepen understanding.
+   Pip's connection must use a word like: "so", "means", "just like", "both", "together", "remember", or "that's why".
+   Example: "Wait — so both of those things work together. That's why it happens so fast!"
+8. Nova should ask at least 2 follow-up "but WHY" or "but HOW" questions that deepen understanding.
+   Example: "But wait — why does that make it so bright?" or "How does the cloud know when to let go?"
 9. Experts should have DISTINCT personalities that come through in how they speak.
 10. Use analogies from a child's daily life: butter melting, flashlights, crayons, garden hoses, etc.
     EVERY explanation scene MUST contain at least one analogy phrase: "like a", "just like", "imagine", "pretend", "think of", "works like", or "kind of like".
