@@ -58,7 +58,9 @@ Create the episode outline. Remember:
 - The child-friendly analogy is the MAIN explanation. The science word is a bonus, not the focus.
 - Adults are entertained by surprising connections and "whoa I didn't know that" facts, NOT by vocabulary
 - Trust the child's intelligence to understand IDEAS, but don't overload them with WORDS
-- The narrative should build understanding progressively: concept 1 → concept 2 → concept 3"""
+- The narrative should build understanding progressively: concept 1 → concept 2 → concept 3
+- Write child_explanation fields in short sentences (≤10 words each) using analogy phrases like "like a", "imagine", or "works like"
+  Example: "Fish have tiny filters. They work like a net. They grab air from the water."
 
 
 STAGE_2_SYSTEM = """You are a script writer for "Wunderbots," an animated educational show for curious children ages 4-7 (but entertaining for all ages). You write episode scripts as structured JSON scene graphs.
