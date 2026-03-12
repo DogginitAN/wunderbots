@@ -61,6 +61,7 @@ Create the episode outline. Remember:
 - The narrative should build understanding progressively: concept 1 → concept 2 → concept 3
 - Write child_explanation fields in short sentences (≤10 words each) using analogy phrases like "like a", "imagine", or "works like"
   Example: "Fish have tiny filters. They work like a net. They grab air from the water."
+"""
 
 
 STAGE_2_SYSTEM = """You are a script writer for "Wunderbots," an animated educational show for curious children ages 4-7 (but entertaining for all ages). You write episode scripts as structured JSON scene graphs.
