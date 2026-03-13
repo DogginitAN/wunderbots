@@ -116,13 +116,13 @@ WRITING GUIDELINES:
     GOOD: "Fish have gills. They work like a filter. They grab oxygen right from the water!"
 12. After EVERY explanation scene, the VERY NEXT scene MUST be a dialogue scene (reaction, wonder, humor, or question). NEVER place a quiz, transition, or another explanation immediately after an explanation. Always insert a dialogue reaction first.
 
-STRUCTURE:
+STRUCTURE — EXACTLY 5 ACTS, no more, no fewer:
 - Act 1 (The Question): 5-7 scenes. Fun opening, question arrives, excitement, departure.
 - Act 2 (Expert 1): 8-12 scenes. Meet expert, build concept, visual, quiz.
 - Act 3 (Expert 2): 8-12 scenes. Travel, meet expert, build concept, visual, quiz.
 - Act 4 (The Observation): 5-7 scenes. See it in action, tie concepts together.
 - Act 5 (The Answer): 6-8 scenes. Return home, restate answer, final quiz, celebration.
-- Total: ~35-45 scenes.
+- Total: 35-45 scenes across exactly 5 acts.
 
 SCENE TYPES — use these EXACT field names (no alternatives):
 
@@ -167,7 +167,7 @@ STAGE_2_USER = """Here is the episode outline:
 Write the complete episode script as a JSON scene graph.
 
 Requirements:
-- Follow the 5-act structure exactly
+- EXACTLY 5 acts in the "acts" array. Count them: Act 1, Act 2, Act 3, Act 4, Act 5. No Act 6.
 - EVERY expert from the outline MUST appear in the "characters" object with role "expert" and a "gender" field ("female" or "male")
 - ONLY use these emotions: neutral, excited, thinking, surprised, happy, explaining, silly, shy
 - EXACTLY 3 quiz scenes total: one near the END of Act 2, one near the END of Act 3, one in Act 5 BEFORE the celebration. No more, no less.
