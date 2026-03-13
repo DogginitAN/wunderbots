@@ -133,10 +133,11 @@ SCENE TYPES — use these EXACT field names (no alternatives):
   explanation: {"type":"explanation","character":"dr_tara","emotion":"explaining","text":"...","visual":"visual_id"}
 
   quiz:        {"type":"quiz","question":"...","options":[{"text":"...","correct":true,"response":"..."},{"text":"...","correct":false,"response":"..."},{"text":"...","correct":false,"response":"..."}]}
-               CRITICAL: Each option is an OBJECT with "text", "correct" (boolean), and "response".
-               WRONG: options as strings — ["option A", "option B", "option C"] — DO NOT DO THIS.
-               WRONG: using "correctIndex" — there is no correctIndex field. Use "correct": true/false.
-               Exactly 3 options per quiz, exactly 1 has "correct": true, the other 2 have "correct": false.
+               EXACTLY 3 options per quiz. Each option is an OBJECT. Field names:
+               ✓ "text" (the answer text) — NOT "answer"
+               ✓ "correct" (boolean true/false) — NOT "isCorrect", NOT "correctIndex"
+               ✓ "response" (feedback to the child)
+               Exactly 1 option has "correct":true, the other 2 have "correct":false.
 
   transition:  {"type":"transition","destination":"weather_station","text":"fun travel line","travel_mode":"rocket"}
                CRITICAL: "destination" NOT "to". "travel_mode" NOT "method".
@@ -198,7 +199,7 @@ FINAL VERIFICATION — scan your output before returning and fix any of these:
   1. "characters" must be an OBJECT with keys (not an array) — contains nova, bolt, pip + all experts.
   2. Every expert must have "role":"expert" and "gender":"female" or "gender":"male".
   3. Every scene's character field must be lowercase: "nova", "bolt", "pip", not "Nova", "Bolt", "Pip".
-  4. Every quiz "options" must be an array of 3 OBJECTS each with "text", "correct" (boolean), "response" — no "correctIndex" field, no string items.
+  4. Every quiz "options" must be an array of EXACTLY 3 OBJECTS each with "text" (not "answer"), "correct" (boolean, not "isCorrect"), "response" — no "correctIndex", no string items.
   5. The "acts" array must have EXACTLY 5 entries.
 
 Output ONLY valid JSON. No markdown, no commentary, no code fences."""
