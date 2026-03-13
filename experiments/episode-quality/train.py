@@ -78,7 +78,8 @@ CRITICAL FORMATTING RULES:
 1. EVERY character who speaks MUST be defined in the "characters" object — including ALL experts.
    Expert character IDs should be lowercase with underscores, e.g. "dr_aurora", "prof_nimbus".
 2. The ONLY valid emotions are: neutral, excited, thinking, surprised, happy, explaining, silly, shy
-   Do NOT use any other emotion values.
+   Do NOT use any other emotion values. BANNED: curious, amazed, awed, wonder, fascinated, intrigued.
+   Use "thinking" for follow-up questions. Use "excited" for discoveries. Use "surprised" for revelations.
 3. The first dialogue scene in each new location MUST include "background" and "charactersPresent".
 4. No two consecutive scenes should have the same character speaking.
 5. "background" values should be simple location IDs like: clubhouse, observatory, science_lab, kitchen, etc.
@@ -116,12 +117,22 @@ STRUCTURE:
 - Act 5 (The Answer): 6-8 scenes. Return home, restate answer, final quiz, celebration.
 - Total: ~35-45 scenes.
 
-SCENE TYPES:
-- "dialogue": character, emotion, text. Optional: background (on location change), charactersPresent (on cast change)
-- "explanation": character, emotion, text, visual (references a visual ID from the outline)
-- "quiz": question, options [{text, correct, response}] — exactly 3 options, exactly 1 correct
-- "transition": destination, text (fun travel description), travel_mode (one of: "rocket", "submarine", "balloon" — pick based on destination: rocket for space/labs/volcanoes, submarine for ocean/arctic, balloon for kitchens/museums/gardens/farms)
-- "celebration": text — ONLY ONE, ONLY as the VERY LAST scene of Act 5. Never in any other act.
+SCENE TYPES — use these EXACT field names (no alternatives):
+
+  dialogue:    {"type":"dialogue","character":"bolt","emotion":"silly","text":"..."}
+               Optional: "background":"location_id", "charactersPresent":["nova","bolt","pip"]
+               CRITICAL: "character" NOT "speaker". NEVER omit the character field.
+
+  explanation: {"type":"explanation","character":"dr_tara","emotion":"explaining","text":"...","visual":"visual_id"}
+
+  quiz:        {"type":"quiz","question":"...","options":[{"text":"...","correct":true,"response":"..."},{"text":"...","correct":false,"response":"..."},{"text":"...","correct":false,"response":"..."}]}
+               CRITICAL: "correct" NOT "isCorrect". Exactly 3 options, exactly 1 correct.
+
+  transition:  {"type":"transition","destination":"weather_station","text":"fun travel line","travel_mode":"rocket"}
+               CRITICAL: "destination" NOT "to". "travel_mode" NOT "method".
+               travel_mode: rocket (space/labs/volcanoes), submarine (ocean/arctic), balloon (kitchens/gardens/farms/museums)
+
+  celebration: {"type":"celebration","text":"..."} — ONLY ONE, ONLY the VERY LAST scene of Act 5. Never elsewhere.
 
 Output ONLY valid JSON. No markdown, no code fences, no commentary.
 
@@ -165,5 +176,8 @@ Requirements:
 - EVERY explanation scene must use at least one analogy phrase: "like a", "just like", "imagine", "pretend", "think of", "works like", or "kind of like"
 - After every explanation beat, follow with a character REACTING (humor, wonder, a question) before the next explanation
 - The final act should clearly restate the answer in a way that sticks
+
+FIELD NAME REMINDERS (these are wrong → use the correct version instead):
+  "speaker" → "character"  |  "isCorrect" → "correct"  |  "to" → "destination"  |  "method" → "travel_mode"
 
 Output ONLY valid JSON. No markdown, no commentary, no code fences."""
