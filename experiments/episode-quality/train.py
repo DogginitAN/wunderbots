@@ -107,7 +107,7 @@ WRITING GUIDELINES:
 11. Keep sentences SHORT. Maximum 10 words per sentence. A 4-year-old is listening. Break long thoughts into two sentences.
     BAD: "The reason fish can breathe underwater is because they have special organs called gills."
     GOOD: "Fish have gills. They work like a filter. They grab oxygen right from the water!"
-12. After any explanation, have a character react with wonder or humor BEFORE the next explanation. Never stack two explanations back-to-back.
+12. After EVERY explanation scene, the VERY NEXT scene MUST be a dialogue scene (reaction, wonder, humor, or question). NEVER place a quiz, transition, or another explanation immediately after an explanation. Always insert a dialogue reaction first.
 
 STRUCTURE:
 - Act 1 (The Question): 5-7 scenes. Fun opening, question arrives, excitement, departure.
@@ -164,7 +164,10 @@ Requirements:
 - EVERY expert from the outline MUST appear in the "characters" object with role "expert" and a "gender" field ("female" or "male")
 - ONLY use these emotions: neutral, excited, thinking, surprised, happy, explaining, silly, shy
 - EXACTLY 3 quiz scenes total: one near the END of Act 2, one near the END of Act 3, one in Act 5 BEFORE the celebration. No more, no less.
-- QUIZ ANSWER POSITIONS (REQUIRED): Quiz 1 (Act 2) → correct option at index 0. Quiz 2 (Act 3) → correct option at index 1. Quiz 3 (Act 5) → correct option at index 2. This produces position variety across A/B/C.
+- QUIZ ANSWER POSITIONS — build each quiz options array like this:
+  Quiz 1 (Act 2): [{"text":"...","correct":true,"response":"..."},  {"text":"...","correct":false,"response":"..."},  {"text":"...","correct":false,"response":"..."}]  ← correct is FIRST
+  Quiz 2 (Act 3): [{"text":"...","correct":false,"response":"..."},  {"text":"...","correct":true,"response":"..."},  {"text":"...","correct":false,"response":"..."}]  ← correct is SECOND
+  Quiz 3 (Act 5): [{"text":"...","correct":false,"response":"..."},  {"text":"...","correct":false,"response":"..."},  {"text":"...","correct":true,"response":"..."}]  ← correct is THIRD
 - Reference all key visuals from the outline using their IDs
 - Write dialogue that is entertaining for a 5-year-old AND an adult watching together
 - Target 35-45 total scenes across all acts
