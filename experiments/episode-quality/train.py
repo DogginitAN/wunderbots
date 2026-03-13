@@ -195,6 +195,6 @@ SCHEMA CHECK — before outputting, verify:
   "characters" is a JSON OBJECT (key→value map), NOT an array.
   It must contain nova, bolt, pip, and all experts as keys — never empty.
   Expert characters must have "role":"expert" and "gender":"female" or "gender":"male".
-  Quiz "options" must be an array of OBJECTS like [{"text":"...","correct":true,"response":"..."},...] — NOT an array of strings.
+  Quiz "options" must be an array of OBJECTS (each with "text", "correct", and "response" fields) — NOT an array of plain strings.
 
 Output ONLY valid JSON. No markdown, no commentary, no code fences."""
