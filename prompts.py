@@ -28,6 +28,7 @@ Your outline must:
    - Test understanding, not just recall
    - Wrong answer responses should gently redirect WITHOUT making the child feel bad
    - Correct answer responses should reinforce the concept with slightly different words
+   - ANSWER POSITION: Quiz 1 → correct answer FIRST (index 0). Quiz 2 → correct answer SECOND (index 1). Quiz 3 → correct answer THIRD (index 2). This ensures variety.
 
 5. PLAN KEY VISUALS (2-3 diagrams)
    - Give each a short snake_case ID like "light_spectrum" or "scattering_diagram"
@@ -38,7 +39,7 @@ Output ONLY valid JSON (no markdown, no code fences):
   "core_answer": "string",
   "detailed_answer": "string",
   "key_concepts": [{"concept":"string","child_explanation":"string","real_terminology":"string","analogy":"string","advanced_detail":"string","expert_index":0}],
-  "experts": [{"id":"string","name":"string","title":"string","personality":"string","expertise":"string","environment":"string","props":["string"]}],
+  "experts": [{"id":"string","name":"string","title":"string","personality":"string","expertise":"string","environment":"string","props":["string"],"gender":"female or male"}],
   "environments": ["string"],
   "quizzes": [{"after_expert":0,"question":"string","options":[{"text":"string","correct":true,"response":"string"},{"text":"string","correct":false,"response":"string"},{"text":"string","correct":false,"response":"string"}]}],
   "key_visuals": [{"id":"string","moment":"string","description":"string","type":"diagram"}],
@@ -53,7 +54,10 @@ Create the episode outline. Remember:
 - The child-friendly analogy is the MAIN explanation. The science word is a bonus, not the focus.
 - Adults are entertained by surprising connections and "whoa I didn't know that" facts, NOT by vocabulary
 - Trust the child's intelligence to understand IDEAS, but don't overload them with WORDS
-- The narrative should build understanding progressively: concept 1 → concept 2 → concept 3"""
+- The narrative should build understanding progressively: concept 1 → concept 2 → concept 3
+- Write child_explanation fields in short sentences (≤10 words each) using analogy phrases like "like a", "imagine", or "works like"
+  Example: "Fish have tiny filters. They work like a net. They grab air from the water."
+"""
 
 
 STAGE_2_SYSTEM = """You are a script writer for "Wunderbots," an animated educational show for curious children ages 4-7 (but entertaining for all ages). You write episode scripts as structured JSON scene graphs.
@@ -68,11 +72,19 @@ Pip (guide, green/pink, 🌱): Quiet genius. Shy, speaks softly, remembers every
 
 CRITICAL FORMATTING RULES:
 1. EVERY character who speaks MUST be defined in the "characters" object — including ALL experts.
-   Expert character IDs should be lowercase with underscores, e.g. "dr_aurora", "prof_nimbus".
+   CRITICAL: "characters" is a JSON OBJECT/MAP with string keys — NEVER an array.
+   WRONG ❌:  "characters": [{"id":"nova",...}, {"id":"bolt",...}]
+   CORRECT ✓: "characters": {"nova": {"id":"nova",...}, "bolt": {"id":"bolt",...}}
+   CRITICAL: All character IDs are lowercase: "nova", "bolt", "pip" — NOT "Nova", "Bolt", "Pip".
+   Expert character IDs use lowercase_with_underscores, e.g. "dr_aurora", "prof_nimbus".
+   The "characters" object MUST include nova, bolt, pip, AND all experts from the outline.
+   The "character" field in every scene MUST match the lowercase ID in the characters object.
+   Expert characters MUST have "role": "expert" (exactly this string). Nova/Bolt/Pip have "role": "guide".
 2. The ONLY valid emotions are: neutral, excited, thinking, surprised, happy, explaining, silly, shy
-   Do NOT use any other emotion values.
+   Do NOT use any other emotion values. BANNED: curious, amazed, awed, wonder, fascinated, intrigued.
+   Use "thinking" for follow-up questions. Use "excited" for discoveries. Use "surprised" for revelations.
 3. The first dialogue scene in each new location MUST include "background" and "charactersPresent".
-4. No two consecutive scenes should have the same character speaking.
+4. No two consecutive scenes should have the same character speaking. After expert A speaks, the next scene must be a different character (nova, bolt, or pip). Experts cannot speak twice in a row.
 5. "background" values should be simple location IDs like: clubhouse, observatory, science_lab, kitchen, etc.
 
 WRITING GUIDELINES:
@@ -84,27 +96,50 @@ WRITING GUIDELINES:
 4. Adults stay engaged through SURPRISING FACTS and CLEVER CONNECTIONS, not terminology.
 5. The analogy IS the explanation. The science word is a fun bonus the child can remember, like a souvenir.
 6. Bolt should make at least 3 genuinely funny wrong guesses — each one DIFFERENT in style.
+   Use the "silly" emotion. Examples: "Maybe it's because the clouds are sneezing?" / "I bet tiny invisible painters do it!" / "What if it's just the sky being grumpy?"
 7. Pip should have at least 1 moment connecting two concepts that surprises everyone.
-8. Nova should ask at least 2 follow-up "but WHY" questions that deepen understanding.
+   Pip's connection must use a word like: "so", "means", "just like", "both", "together", "remember", or "that's why".
+   Example: "Wait — so both of those things work together. That's why it happens so fast!"
+8. Nova should ask at least 2 follow-up "but WHY" or "but HOW" questions that deepen understanding.
+   Example: "But wait — why does that make it so bright?" or "How does the cloud know when to let go?"
 9. Experts should have DISTINCT personalities that come through in how they speak.
 10. Use analogies from a child's daily life: butter melting, flashlights, crayons, garden hoses, etc.
-11. Keep sentences SHORT. A 4-year-old is listening. If a sentence has a comma, it's probably too long.
-12. After any explanation, have a character react with wonder or humor BEFORE the next explanation. Never stack two explanations back-to-back.
+    EVERY explanation scene MUST contain at least one analogy phrase: "like a", "just like", "imagine", "pretend", "think of", "works like", or "kind of like".
+    BAD explanation: "The sun is very far away and light takes time to travel."
+    GOOD explanation: "Imagine you threw a ball — it takes time to reach your friend! Light works like that ball, but WAY faster!"
+11. Keep sentences SHORT. Maximum 10 words per sentence. A 4-year-old is listening. Break long thoughts into two sentences.
+    BAD: "The reason fish can breathe underwater is because they have special organs called gills."
+    GOOD: "Fish have gills. They work like a filter. They grab oxygen right from the water!"
+12. After EVERY explanation scene, the VERY NEXT scene MUST be a dialogue scene (reaction, wonder, humor, or question). NEVER place a quiz, transition, or another explanation immediately after an explanation. Always insert a dialogue reaction first.
 
-STRUCTURE:
+STRUCTURE — EXACTLY 5 ACTS, no more, no fewer:
 - Act 1 (The Question): 5-7 scenes. Fun opening, question arrives, excitement, departure.
 - Act 2 (Expert 1): 8-12 scenes. Meet expert, build concept, visual, quiz.
 - Act 3 (Expert 2): 8-12 scenes. Travel, meet expert, build concept, visual, quiz.
 - Act 4 (The Observation): 5-7 scenes. See it in action, tie concepts together.
 - Act 5 (The Answer): 6-8 scenes. Return home, restate answer, final quiz, celebration.
-- Total: ~35-45 scenes.
+- Total: 35-45 scenes across exactly 5 acts.
 
-SCENE TYPES:
-- "dialogue": character, emotion, text. Optional: background (on location change), charactersPresent (on cast change)
-- "explanation": character, emotion, text, visual (references a visual ID from the outline)
-- "quiz": question, options [{text, correct, response}] — exactly 3 options, exactly 1 correct
-- "transition": destination, text (fun travel description), travel_mode (one of: "rocket", "submarine", "balloon" — pick based on destination: rocket for space/labs/volcanoes, submarine for ocean/arctic, balloon for kitchens/museums/gardens/farms)
-- "celebration": text — ONLY ONE, ONLY as the VERY LAST scene of Act 5. Never in any other act.
+SCENE TYPES — use these EXACT field names (no alternatives):
+
+  dialogue:    {"type":"dialogue","character":"bolt","emotion":"silly","text":"..."}
+               Optional: "background":"location_id", "charactersPresent":["nova","bolt","pip"]
+               CRITICAL: "character" NOT "speaker". NEVER omit the character field.
+
+  explanation: {"type":"explanation","character":"dr_tara","emotion":"explaining","text":"...","visual":"visual_id"}
+
+  quiz:        {"type":"quiz","question":"...","options":[{"text":"...","correct":true,"response":"..."},{"text":"...","correct":false,"response":"..."},{"text":"...","correct":false,"response":"..."}]}
+               EXACTLY 3 options per quiz. Each option is an OBJECT. Field names:
+               ✓ "text" (the answer text) — NOT "answer"
+               ✓ "correct" (boolean true/false) — NOT "isCorrect", NOT "correctIndex"
+               ✓ "response" (feedback to the child)
+               Exactly 1 option has "correct":true, the other 2 have "correct":false.
+
+  transition:  {"type":"transition","destination":"weather_station","text":"fun travel line","travel_mode":"rocket"}
+               CRITICAL: "destination" NOT "to". "travel_mode" NOT "method".
+               travel_mode: rocket (space/labs/volcanoes), submarine (ocean/arctic), balloon (kitchens/gardens/farms/museums)
+
+  celebration: {"type":"celebration","text":"..."} — ONLY ONE, ONLY the VERY LAST scene of Act 5. Never elsewhere.
 
 Output ONLY valid JSON. No markdown, no code fences, no commentary.
 
@@ -132,11 +167,14 @@ STAGE_2_USER = """Here is the episode outline:
 Write the complete episode script as a JSON scene graph.
 
 Requirements:
-- Follow the 5-act structure exactly
+- EXACTLY 5 acts in the "acts" array. Count them: Act 1, Act 2, Act 3, Act 4, Act 5. No Act 6.
 - EVERY expert from the outline MUST appear in the "characters" object with role "expert" and a "gender" field ("female" or "male")
 - ONLY use these emotions: neutral, excited, thinking, surprised, happy, explaining, silly, shy
-- Include all quiz checkpoints from the outline (3 quizzes, each with exactly 3 options)
-- IMPORTANT: Randomize the position of the correct answer — do NOT always put it first. Vary across quizzes.
+- EXACTLY 3 quiz scenes total: one near the END of Act 2, one near the END of Act 3, one in Act 5 BEFORE the celebration. No more, no less.
+- QUIZ ANSWER POSITIONS — the correct option MUST be at a different index each quiz:
+  Quiz 1 (Act 2): correct at index 0 → put the right answer FIRST in the options array
+  Quiz 2 (Act 3): correct at index 1 → put the right answer SECOND in the options array
+  Quiz 3 (Act 5): correct at index 2 → put the right answer THIRD in the options array
 - Reference all key visuals from the outline using their IDs
 - Write dialogue that is entertaining for a 5-year-old AND an adult watching together
 - Target 35-45 total scenes across all acts
@@ -144,8 +182,22 @@ Requirements:
 - Pip should have at least 1 moment where she quietly connects two concepts
 - Nova should ask at least 2 follow-up questions that deepen understanding
 - ONE science word per concept max — surrounded by simple everyday language
-- Keep dialogue punchy and short — a 4-year-old is the primary audience
+- Keep dialogue punchy and short — maximum 10 words per sentence, a 4-year-old is the primary audience
+- EVERY explanation scene must use at least one analogy phrase: "like a", "just like", "imagine", "pretend", "think of", "works like", or "kind of like"
 - After every explanation beat, follow with a character REACTING (humor, wonder, a question) before the next explanation
 - The final act should clearly restate the answer in a way that sticks
+
+FIELD NAME REMINDERS (wrong on left → correct on right):
+  scene character: "speaker" → "character"
+  quiz option correct: "isCorrect" → "correct"  |  "answer" → "text"
+  transition: "to" → "destination"  |  "method" → "travel_mode"
+  character IDs: "Nova" → "nova"  |  "Bolt" → "bolt"  |  "Pip" → "pip"
+
+FINAL VERIFICATION — scan your output before returning and fix any of these:
+  1. "characters" must be a JSON MAP/OBJECT using curly-brace syntax with string keys — NOT a square-bracket array. Keys are character IDs: "nova", "bolt", "pip", plus each expert's ID. Never use a list like [nova_obj, bolt_obj].
+  2. Every expert must have "role":"expert" and "gender":"female" or "gender":"male".
+  3. Every scene's character field must be lowercase: "nova", "bolt", "pip", not "Nova", "Bolt", "Pip".
+  4. Every quiz "options" must be an array of EXACTLY 3 OBJECTS each with "text" (not "answer"), "correct" (boolean, not "isCorrect"), "response" — no "correctIndex", no string items.
+  5. The "acts" array must have EXACTLY 5 entries.
 
 Output ONLY valid JSON. No markdown, no commentary, no code fences."""
