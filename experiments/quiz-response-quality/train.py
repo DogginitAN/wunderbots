@@ -125,6 +125,8 @@ QUIZ RESPONSE WRITING RULES:
 - Correct answer RESPONSES: Start with celebration ("Yes!", "You got it!", "Awesome!"). Then restate using EXACTLY one of these phrases: "like a", "just like", "works like", "imagine", "kind of like". 8-20 words total.
   GOOD: "Yes! You got it! Gills work like a net — they catch oxygen straight from the water!"
   GOOD: "Awesome! Just like a filter catches dirt, gills catch the air fish need!"
+  GOOD: "You got it! Just like rubbing socks on carpet makes a spark, clouds do the same — FLASH!"
+  BAD: "Like rubbing a balloon makes static, clouds do too." (starts with "Like" + verb, not "like a"/"just like"/"works like")
 - Wrong answer OPTION TEXTS (the choices the child sees) should be SILLY — include fun words: tiny, invisible, magic, dragon, sneezing, dancing, wizard, monster, silly, chocolate. Make kids giggle!
   IMPORTANT: Silliness is in the OPTION TEXT only. The RESPONSE always starts warm ("Great guess!", "Ooh!").
 - ALL quiz text (questions, options, responses) must use words a 4-year-old knows. No jargon anywhere.
@@ -212,7 +214,8 @@ QUIZ RESPONSE RULES (CRITICAL — these are what the child reads after answering
 - CORRECT answer RESPONSES: Start with celebration ("Yes!", "You got it!"). Then restate using EXACTLY one of: "like a", "just like", "works like", "imagine", "kind of like". 8-20 words.
   GOOD: "Yes! You nailed it! It's like clapping your hands super hard — BOOM!"
   GOOD: "Awesome! Just like a drum booms when you hit it, hot air booms in the sky!"
-  BAD: "Correct." / "You got it! Their gills act like straws." (use "like a" not "act like")
+  GOOD: "You got it! Just like rubbing socks on carpet makes sparks, clouds do the same — FLASH!"
+  BAD: "Correct." / "Like rubbing a balloon makes static." (starts with "Like" + verb — use "just like" or "like a" or "works like" instead)
 - Wrong answer OPTION TEXTS (what the child picks) should be SILLY — use words: tiny, invisible, magic, dragon, sneezing, dancing, wizard, monster, silly, chocolate.
   The RESPONSE after a wrong pick always starts WARM ("Great guess!", "Ooh!") — NOT "Oops!" or "Not right!"
 
