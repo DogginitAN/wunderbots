@@ -133,7 +133,10 @@ SCENE TYPES — use these EXACT field names (no alternatives):
   explanation: {"type":"explanation","character":"dr_tara","emotion":"explaining","text":"...","visual":"visual_id"}
 
   quiz:        {"type":"quiz","question":"...","options":[{"text":"...","correct":true,"response":"..."},{"text":"...","correct":false,"response":"..."},{"text":"...","correct":false,"response":"..."}]}
-               CRITICAL: "correct" NOT "isCorrect". Exactly 3 options, exactly 1 correct.
+               CRITICAL: Each option is an OBJECT with "text", "correct" (boolean), and "response".
+               WRONG: options as strings — ["option A", "option B", "option C"] — DO NOT DO THIS.
+               WRONG: using "correctIndex" — there is no correctIndex field. Use "correct": true/false.
+               Exactly 3 options per quiz, exactly 1 has "correct": true, the other 2 have "correct": false.
 
   transition:  {"type":"transition","destination":"weather_station","text":"fun travel line","travel_mode":"rocket"}
                CRITICAL: "destination" NOT "to". "travel_mode" NOT "method".
