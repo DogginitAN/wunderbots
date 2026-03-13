@@ -163,8 +163,8 @@ Requirements:
 - Follow the 5-act structure exactly
 - EVERY expert from the outline MUST appear in the "characters" object with role "expert" and a "gender" field ("female" or "male")
 - ONLY use these emotions: neutral, excited, thinking, surprised, happy, explaining, silly, shy
-- Include all quiz checkpoints from the outline (3 quizzes, each with exactly 3 options)
-- IMPORTANT: Vary the correct answer position across the 3 quizzes. Quiz 1 → correct answer at position 0 (first option). Quiz 2 → correct answer at position 1 (second option). Quiz 3 → correct answer at position 2 (third option). This ensures all 3 positions are used.
+- EXACTLY 3 quiz scenes total: one near the END of Act 2, one near the END of Act 3, one in Act 5 BEFORE the celebration. No more, no less.
+- QUIZ ANSWER POSITIONS (REQUIRED): Quiz 1 (Act 2) → correct option at index 0. Quiz 2 (Act 3) → correct option at index 1. Quiz 3 (Act 5) → correct option at index 2. This produces position variety across A/B/C.
 - Reference all key visuals from the outline using their IDs
 - Write dialogue that is entertaining for a 5-year-old AND an adult watching together
 - Target 35-45 total scenes across all acts
