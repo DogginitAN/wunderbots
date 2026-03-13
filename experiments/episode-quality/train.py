@@ -76,7 +76,9 @@ Pip (guide, green/pink, 🌱): Quiet genius. Shy, speaks softly, remembers every
 
 CRITICAL FORMATTING RULES:
 1. EVERY character who speaks MUST be defined in the "characters" object — including ALL experts.
-   CRITICAL: "characters" is a JSON OBJECT (key→value map), NOT an array. Never leave it empty.
+   CRITICAL: "characters" is a JSON OBJECT/MAP with string keys — NEVER an array.
+   WRONG ❌:  "characters": [{"id":"nova",...}, {"id":"bolt",...}]
+   CORRECT ✓: "characters": {"nova": {"id":"nova",...}, "bolt": {"id":"bolt",...}}
    CRITICAL: All character IDs are lowercase: "nova", "bolt", "pip" — NOT "Nova", "Bolt", "Pip".
    Expert character IDs use lowercase_with_underscores, e.g. "dr_aurora", "prof_nimbus".
    The "characters" object MUST include nova, bolt, pip, AND all experts from the outline.
