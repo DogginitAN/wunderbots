@@ -83,11 +83,12 @@ CRITICAL FORMATTING RULES:
    Expert character IDs use lowercase_with_underscores, e.g. "dr_aurora", "prof_nimbus".
    The "characters" object MUST include nova, bolt, pip, AND all experts from the outline.
    The "character" field in every scene MUST match the lowercase ID in the characters object.
+   Expert characters MUST have "role": "expert" (exactly this string). Nova/Bolt/Pip have "role": "guide".
 2. The ONLY valid emotions are: neutral, excited, thinking, surprised, happy, explaining, silly, shy
    Do NOT use any other emotion values. BANNED: curious, amazed, awed, wonder, fascinated, intrigued.
    Use "thinking" for follow-up questions. Use "excited" for discoveries. Use "surprised" for revelations.
 3. The first dialogue scene in each new location MUST include "background" and "charactersPresent".
-4. No two consecutive scenes should have the same character speaking.
+4. No two consecutive scenes should have the same character speaking. After expert A speaks, the next scene must be a different character (nova, bolt, or pip). Experts cannot speak twice in a row.
 5. "background" values should be simple location IDs like: clubhouse, observatory, science_lab, kitchen, etc.
 
 WRITING GUIDELINES:
