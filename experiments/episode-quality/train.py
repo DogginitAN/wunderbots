@@ -192,8 +192,8 @@ FIELD NAME REMINDERS (these are wrong → use the correct version instead):
   "Nova" → "nova"  |  "Bolt" → "bolt"  |  "Pip" → "pip"  (character IDs are always lowercase)
 
 SCHEMA CHECK — before outputting, verify:
-  "characters" must be an OBJECT like {"nova":{...},"bolt":{...},"pip":{...},"expert_id":{...}}
-  NOT an array like [{"id":"nova",...}, {"id":"bolt",...}]
-  It must contain nova, bolt, pip, and all experts — never empty.
+  "characters" is a JSON OBJECT (key→value map), NOT an array.
+  It must contain nova, bolt, pip, and all experts as keys — never empty.
+  Expert characters must have "role":"expert" and "gender":"female" or "gender":"male".
 
 Output ONLY valid JSON. No markdown, no commentary, no code fences."""
