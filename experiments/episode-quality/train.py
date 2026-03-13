@@ -194,10 +194,11 @@ FIELD NAME REMINDERS (these are wrong → use the correct version instead):
   "speaker" → "character"  |  "isCorrect" → "correct"  |  "to" → "destination"  |  "method" → "travel_mode"
   "Nova" → "nova"  |  "Bolt" → "bolt"  |  "Pip" → "pip"  (character IDs are always lowercase)
 
-SCHEMA CHECK — before outputting, verify:
-  "characters" is a JSON OBJECT (key→value map), NOT an array.
-  It must contain nova, bolt, pip, and all experts as keys — never empty.
-  Expert characters must have "role":"expert" and "gender":"female" or "gender":"male".
-  Quiz "options" must be an array of OBJECTS (each with "text", "correct", and "response" fields) — NOT an array of plain strings.
+FINAL VERIFICATION — scan your output before returning and fix any of these:
+  1. "characters" must be an OBJECT with keys (not an array) — contains nova, bolt, pip + all experts.
+  2. Every expert must have "role":"expert" and "gender":"female" or "gender":"male".
+  3. Every scene's character field must be lowercase: "nova", "bolt", "pip", not "Nova", "Bolt", "Pip".
+  4. Every quiz "options" must be an array of 3 OBJECTS each with "text", "correct" (boolean), "response" — no "correctIndex" field, no string items.
+  5. The "acts" array must have EXACTLY 5 entries.
 
 Output ONLY valid JSON. No markdown, no commentary, no code fences."""
