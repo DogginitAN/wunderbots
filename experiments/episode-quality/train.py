@@ -191,4 +191,9 @@ FIELD NAME REMINDERS (these are wrong → use the correct version instead):
   "speaker" → "character"  |  "isCorrect" → "correct"  |  "to" → "destination"  |  "method" → "travel_mode"
   "Nova" → "nova"  |  "Bolt" → "bolt"  |  "Pip" → "pip"  (character IDs are always lowercase)
 
+SCHEMA CHECK — before outputting, verify:
+  "characters" must be an OBJECT like {"nova":{...},"bolt":{...},"pip":{...},"expert_id":{...}}
+  NOT an array like [{"id":"nova",...}, {"id":"bolt",...}]
+  It must contain nova, bolt, pip, and all experts — never empty.
+
 Output ONLY valid JSON. No markdown, no commentary, no code fences."""
