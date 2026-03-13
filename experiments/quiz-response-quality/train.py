@@ -25,7 +25,7 @@ Your outline must:
 
 4. WRITE THE QUIZ QUESTIONS (3 total)
    - 3 options each: one correct, two wrong (funny but plausible)
-   - Test understanding, not just recall — ask "why" or "how" questions, never trivia
+   - Test understanding, not just recall — ask "why" or "how" questions, NEVER trivia. BANNED: questions that test a specific number, measurement, or formula (e.g., "How many seconds equal 1 mile?" is forbidden — ask "WHY do we count seconds?" instead)
    - Questions must use everyday words a 4-year-old knows — NO jargon in the question itself
    - Wrong answer OPTION TEXTS should be SILLY — use words like: tiny, invisible, magic, dragon, robot, sneezing, dancing, wizard, monster, silly, chocolate. Example: "Because a tiny dragon is sneezing!"
    - Wrong answer RESPONSES: start warm ("Great guess!", "Ooh, fun idea!"), then ALWAYS use "but", "actually", or "it's more like" to pivot to the right concept
