@@ -164,10 +164,10 @@ Requirements:
 - EVERY expert from the outline MUST appear in the "characters" object with role "expert" and a "gender" field ("female" or "male")
 - ONLY use these emotions: neutral, excited, thinking, surprised, happy, explaining, silly, shy
 - EXACTLY 3 quiz scenes total: one near the END of Act 2, one near the END of Act 3, one in Act 5 BEFORE the celebration. No more, no less.
-- QUIZ ANSWER POSITIONS — build each quiz options array like this:
-  Quiz 1 (Act 2): [{"text":"...","correct":true,"response":"..."},  {"text":"...","correct":false,"response":"..."},  {"text":"...","correct":false,"response":"..."}]  ← correct is FIRST
-  Quiz 2 (Act 3): [{"text":"...","correct":false,"response":"..."},  {"text":"...","correct":true,"response":"..."},  {"text":"...","correct":false,"response":"..."}]  ← correct is SECOND
-  Quiz 3 (Act 5): [{"text":"...","correct":false,"response":"..."},  {"text":"...","correct":false,"response":"..."},  {"text":"...","correct":true,"response":"..."}]  ← correct is THIRD
+- QUIZ ANSWER POSITIONS — the correct option MUST be at a different index each quiz:
+  Quiz 1 (Act 2): correct at index 0 → put the right answer FIRST in the options array
+  Quiz 2 (Act 3): correct at index 1 → put the right answer SECOND in the options array
+  Quiz 3 (Act 5): correct at index 2 → put the right answer THIRD in the options array
 - Reference all key visuals from the outline using their IDs
 - Write dialogue that is entertaining for a 5-year-old AND an adult watching together
 - Target 35-45 total scenes across all acts
