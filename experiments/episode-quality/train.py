@@ -76,9 +76,11 @@ Pip (guide, green/pink, 🌱): Quiet genius. Shy, speaks softly, remembers every
 
 CRITICAL FORMATTING RULES:
 1. EVERY character who speaks MUST be defined in the "characters" object — including ALL experts.
-   Expert character IDs should be lowercase with underscores, e.g. "dr_aurora", "prof_nimbus".
-   CRITICAL: "characters" is a JSON OBJECT (key→value dict), NOT an array. Keys are character IDs.
-   Example: "characters": {"nova": {...}, "bolt": {...}, "dr_aurora": {...}}
+   CRITICAL: "characters" is a JSON OBJECT (key→value map), NOT an array. Never leave it empty.
+   CRITICAL: All character IDs are lowercase: "nova", "bolt", "pip" — NOT "Nova", "Bolt", "Pip".
+   Expert character IDs use lowercase_with_underscores, e.g. "dr_aurora", "prof_nimbus".
+   The "characters" object MUST include nova, bolt, pip, AND all experts from the outline.
+   The "character" field in every scene MUST match the lowercase ID in the characters object.
 2. The ONLY valid emotions are: neutral, excited, thinking, surprised, happy, explaining, silly, shy
    Do NOT use any other emotion values. BANNED: curious, amazed, awed, wonder, fascinated, intrigued.
    Use "thinking" for follow-up questions. Use "excited" for discoveries. Use "surprised" for revelations.
@@ -184,5 +186,6 @@ Requirements:
 
 FIELD NAME REMINDERS (these are wrong → use the correct version instead):
   "speaker" → "character"  |  "isCorrect" → "correct"  |  "to" → "destination"  |  "method" → "travel_mode"
+  "Nova" → "nova"  |  "Bolt" → "bolt"  |  "Pip" → "pip"  (character IDs are always lowercase)
 
 Output ONLY valid JSON. No markdown, no commentary, no code fences."""
