@@ -28,6 +28,7 @@ Your outline must:
    - Test understanding, not just recall
    - Wrong answer responses should gently redirect WITHOUT making the child feel bad
    - Correct answer responses should reinforce the concept with slightly different words
+   - ANSWER POSITION: Quiz 1 → correct answer FIRST (index 0). Quiz 2 → correct answer SECOND (index 1). Quiz 3 → correct answer THIRD (index 2). This ensures variety.
 
 5. PLAN KEY VISUALS (2-3 diagrams)
    - Give each a short snake_case ID like "light_spectrum" or "scattering_diagram"
@@ -38,7 +39,7 @@ Output ONLY valid JSON (no markdown, no code fences):
   "core_answer": "string",
   "detailed_answer": "string",
   "key_concepts": [{"concept":"string","child_explanation":"string","real_terminology":"string","analogy":"string","advanced_detail":"string","expert_index":0}],
-  "experts": [{"id":"string","name":"string","title":"string","personality":"string","expertise":"string","environment":"string","props":["string"]}],
+  "experts": [{"id":"string","name":"string","title":"string","personality":"string","expertise":"string","environment":"string","props":["string"],"gender":"female or male"}],
   "environments": ["string"],
   "quizzes": [{"after_expert":0,"question":"string","options":[{"text":"string","correct":true,"response":"string"},{"text":"string","correct":false,"response":"string"},{"text":"string","correct":false,"response":"string"}]}],
   "key_visuals": [{"id":"string","moment":"string","description":"string","type":"diagram"}],
@@ -53,7 +54,10 @@ Create the episode outline. Remember:
 - The child-friendly analogy is the MAIN explanation. The science word is a bonus, not the focus.
 - Adults are entertained by surprising connections and "whoa I didn't know that" facts, NOT by vocabulary
 - Trust the child's intelligence to understand IDEAS, but don't overload them with WORDS
-- The narrative should build understanding progressively: concept 1 → concept 2 → concept 3"""
+- The narrative should build understanding progressively: concept 1 → concept 2 → concept 3
+- Write child_explanation fields in short sentences (≤10 words each) using analogy phrases like "like a", "imagine", or "works like"
+  Example: "Fish have tiny filters. They work like a net. They grab air from the water."
+"""
 
 
 STAGE_2_SYSTEM = """You are a script writer for "Wunderbots," an animated educational show for curious children ages 4-7 (but entertaining for all ages). You write episode scripts as structured JSON scene graphs.
@@ -84,11 +88,20 @@ WRITING GUIDELINES:
 4. Adults stay engaged through SURPRISING FACTS and CLEVER CONNECTIONS, not terminology.
 5. The analogy IS the explanation. The science word is a fun bonus the child can remember, like a souvenir.
 6. Bolt should make at least 3 genuinely funny wrong guesses — each one DIFFERENT in style.
+   Use the "silly" emotion. Examples: "Maybe it's because the clouds are sneezing?" / "I bet tiny invisible painters do it!" / "What if it's just the sky being grumpy?"
 7. Pip should have at least 1 moment connecting two concepts that surprises everyone.
-8. Nova should ask at least 2 follow-up "but WHY" questions that deepen understanding.
+   Pip's connection must use a word like: "so", "means", "just like", "both", "together", "remember", or "that's why".
+   Example: "Wait — so both of those things work together. That's why it happens so fast!"
+8. Nova should ask at least 2 follow-up "but WHY" or "but HOW" questions that deepen understanding.
+   Example: "But wait — why does that make it so bright?" or "How does the cloud know when to let go?"
 9. Experts should have DISTINCT personalities that come through in how they speak.
 10. Use analogies from a child's daily life: butter melting, flashlights, crayons, garden hoses, etc.
-11. Keep sentences SHORT. A 4-year-old is listening. If a sentence has a comma, it's probably too long.
+    EVERY explanation scene MUST contain at least one analogy phrase: "like a", "just like", "imagine", "pretend", "think of", "works like", or "kind of like".
+    BAD explanation: "The sun is very far away and light takes time to travel."
+    GOOD explanation: "Imagine you threw a ball — it takes time to reach your friend! Light works like that ball, but WAY faster!"
+11. Keep sentences SHORT. Maximum 10 words per sentence. A 4-year-old is listening. Break long thoughts into two sentences.
+    BAD: "The reason fish can breathe underwater is because they have special organs called gills."
+    GOOD: "Fish have gills. They work like a filter. They grab oxygen right from the water!"
 12. After any explanation, have a character react with wonder or humor BEFORE the next explanation. Never stack two explanations back-to-back.
 
 STRUCTURE:
@@ -136,7 +149,7 @@ Requirements:
 - EVERY expert from the outline MUST appear in the "characters" object with role "expert" and a "gender" field ("female" or "male")
 - ONLY use these emotions: neutral, excited, thinking, surprised, happy, explaining, silly, shy
 - Include all quiz checkpoints from the outline (3 quizzes, each with exactly 3 options)
-- IMPORTANT: Randomize the position of the correct answer — do NOT always put it first. Vary across quizzes.
+- IMPORTANT: Vary the correct answer position across the 3 quizzes. Quiz 1 → correct answer at position 0 (first option). Quiz 2 → correct answer at position 1 (second option). Quiz 3 → correct answer at position 2 (third option). This ensures all 3 positions are used.
 - Reference all key visuals from the outline using their IDs
 - Write dialogue that is entertaining for a 5-year-old AND an adult watching together
 - Target 35-45 total scenes across all acts
@@ -144,7 +157,8 @@ Requirements:
 - Pip should have at least 1 moment where she quietly connects two concepts
 - Nova should ask at least 2 follow-up questions that deepen understanding
 - ONE science word per concept max — surrounded by simple everyday language
-- Keep dialogue punchy and short — a 4-year-old is the primary audience
+- Keep dialogue punchy and short — maximum 10 words per sentence, a 4-year-old is the primary audience
+- EVERY explanation scene must use at least one analogy phrase: "like a", "just like", "imagine", "pretend", "think of", "works like", or "kind of like"
 - After every explanation beat, follow with a character REACTING (humor, wonder, a question) before the next explanation
 - The final act should clearly restate the answer in a way that sticks
 
