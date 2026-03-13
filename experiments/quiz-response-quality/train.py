@@ -232,7 +232,8 @@ FINAL VERIFICATION — scan your output before returning and fix any of these:
   4. Every quiz "options" must be an array of EXACTLY 3 OBJECTS each with "text" (not "answer"), "correct" (boolean, not "isCorrect"), "response" — no "correctIndex", no string items.
   5. The "acts" array must have EXACTLY 5 entries.
   6. Every wrong-answer RESPONSE starts with warmth ("Great guess!", "Ooh!", "Ha!") — NOT "Oops!" or "Not right!" or "Wrong!".
-  7. Every correct-answer RESPONSE contains one of: "like a", "just like", "works like", "imagine", "kind of like".
+  7. Every correct-answer RESPONSE contains one of these EXACT phrases: "like a", "just like", "works like", "imagine", "kind of like".
+     If a response starts with "Like [verb]" (e.g., "Like rubbing...", "Like pushing...") → REWRITE: "Just like a [noun] does [action], [concept] does the same!"
   8. No scientific jargon in quiz questions or wrong answer options.
 
 Output ONLY valid JSON. No markdown, no commentary, no code fences."""
