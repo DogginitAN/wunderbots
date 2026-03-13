@@ -191,12 +191,14 @@ Requirements:
 - After every explanation beat, follow with a character REACTING (humor, wonder, a question) before the next explanation
 - The final act should clearly restate the answer in a way that sticks
 
-FIELD NAME REMINDERS (these are wrong → use the correct version instead):
-  "speaker" → "character"  |  "isCorrect" → "correct"  |  "to" → "destination"  |  "method" → "travel_mode"
-  "Nova" → "nova"  |  "Bolt" → "bolt"  |  "Pip" → "pip"  (character IDs are always lowercase)
+FIELD NAME REMINDERS (wrong on left → correct on right):
+  scene character: "speaker" → "character"
+  quiz option correct: "isCorrect" → "correct"  |  "answer" → "text"
+  transition: "to" → "destination"  |  "method" → "travel_mode"
+  character IDs: "Nova" → "nova"  |  "Bolt" → "bolt"  |  "Pip" → "pip"
 
 FINAL VERIFICATION — scan your output before returning and fix any of these:
-  1. "characters" must be an OBJECT with keys (not an array) — contains nova, bolt, pip + all experts.
+  1. "characters" must be a JSON MAP/OBJECT using curly-brace syntax with string keys — NOT a square-bracket array. Keys are character IDs: "nova", "bolt", "pip", plus each expert's ID. Never use a list like [nova_obj, bolt_obj].
   2. Every expert must have "role":"expert" and "gender":"female" or "gender":"male".
   3. Every scene's character field must be lowercase: "nova", "bolt", "pip", not "Nova", "Bolt", "Pip".
   4. Every quiz "options" must be an array of EXACTLY 3 OBJECTS each with "text" (not "answer"), "correct" (boolean, not "isCorrect"), "response" — no "correctIndex", no string items.
